@@ -1,0 +1,4 @@
+services:
+  neon-molgen:
+    cpus: ${ANALYSIS_CPUS:-64}
+    cpuset: ${ANALYSIS_CPUSET:-0-63}

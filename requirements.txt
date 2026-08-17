@@ -1,0 +1,11 @@
+numpy==2.1.2
+pandas==2.3.3
+rdkit==2026.3.5
+scikit-learn==1.9.0
+scipy==1.17.1
+torch==2.5.1
+tqdm==4.66.5
+mlflow==3.15.1
+fcd_torch==1.0.7
+matplotlib==3.11.1
+seaborn==0.13.2

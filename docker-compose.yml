@@ -1,0 +1,56 @@
+services:
+  neon-molgen:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: neon-molgen:latest
+    container_name: neon-molgen
+    working_dir: /workspace/neon_molecular_generation
+    environment:
+      PYTHONPATH: /workspace/neon_molecular_generation
+      NEON_DISABLE_MLFLOW: ${NEON_DISABLE_MLFLOW:-0}
+    volumes:
+      - .:/workspace/neon_molecular_generation
+      - neon_molgen_cache:/root/.cache
+    shm_size: "8gb"
+    tty: true
+    stdin_open: true
+
+  reinvent4:
+    build:
+      context: .
+      dockerfile: Dockerfile.reinvent
+    image: neon-reinvent4:latest
+    container_name: neon-reinvent4
+    working_dir: /workspace/neon_molecular_generation
+    environment:
+      PYTHONPATH: /workspace/neon_molecular_generation
+      NEON_DISABLE_MLFLOW: ${NEON_DISABLE_MLFLOW:-0}
+    volumes:
+      - .:/workspace/neon_molecular_generation
+      - reinvent4_cache:/root/.cache
+    shm_size: "8gb"
+    tty: true
+    stdin_open: true
+
+  semlaflow:
+    build:
+      context: .
+      dockerfile: Dockerfile.semlaflow
+    image: neon-semlaflow:latest
+    container_name: neon-semlaflow
+    working_dir: /workspace/neon_molecular_generation
+    environment:
+      PYTHONPATH: /workspace/neon_molecular_generation:/workspace/neon_molecular_generation/external/semla-flow
+      NEON_DISABLE_MLFLOW: ${NEON_DISABLE_MLFLOW:-0}
+    volumes:
+      - .:/workspace/neon_molecular_generation
+      - semlaflow_cache:/root/.cache
+    shm_size: "8gb"
+    tty: true
+    stdin_open: true
+
+volumes:
+  neon_molgen_cache:
+  reinvent4_cache:
+  semlaflow_cache:

@@ -1,0 +1,26 @@
+{
+  "external_model": "REINVENT4",
+  "external_repo": "external/REINVENT4",
+  "results_dir": "results/external/reinvent4",
+  "baseline_samples": "results/external/reinvent4/baseline/prior_samples.smi",
+  "scored_baseline": "results/external/reinvent4/baseline/prior_samples_scored.csv",
+  "objective": "reactive_removal",
+  "selection": {
+    "mode": "binary",
+    "bad_where": "reactive_hit",
+    "bad_value": 1.0,
+    "good_where": "reactive_hit",
+    "good_value": 0.0,
+    "balance": true,
+    "max_smiles": 5000,
+    "min_smiles": 500
+  },
+  "neon": {
+    "lambda_values": [0.25, 0.5, 0.75, 1.0]
+  },
+  "notes": {
+    "status": "scaffold",
+    "task_arithmetic": "Do not implement until REINVENT4 checkpoint structure has been probed."
+  }
+}
+

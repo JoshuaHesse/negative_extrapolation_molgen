@@ -1,0 +1,70 @@
+{
+  "base_results_dir": "results/guacamol_transformer_base",
+  "objective": {
+    "name": "chelator_removal"
+  },
+  "training": {
+    "bad_epochs": 1,
+    "positive_epochs": 1,
+    "batch_size": 256,
+    "learning_rate": 0.0005
+  },
+  "sampling": {
+    "eval_samples": 10000,
+    "batch_size": 512,
+    "max_len": 150,
+    "temperature": 0.75
+  },
+  "selection": {
+    "mode": "binary",
+    "bad_where": "chelator_hit",
+    "bad_value": 1.0,
+    "good_where": "chelator_hit",
+    "good_value": 0.0,
+    "balance": true,
+    "max_smiles": 5000,
+    "min_smiles": 500
+  },
+  "neon": {
+    "lambda_values": [0.1, 0.25, 0.5, 0.75, 1.0],
+    "parameter_scopes": [
+      {
+        "name": "full"
+      },
+      {
+        "name": "no_embeddings_layernorm",
+        "exclude": [
+          "token_embedding.",
+          "position_embedding.",
+          "norm.",
+          ".norm1.",
+          ".norm2."
+        ]
+      },
+      {
+        "name": "last2_blocks_output",
+        "include": ["transformer.layers.2.", "transformer.layers.3.", "output."]
+      },
+      {
+        "name": "last_block_output",
+        "include": ["transformer.layers.3.", "output."]
+      },
+      {
+        "name": "output",
+        "include": ["output."]
+      }
+    ]
+  },
+  "controls": {
+    "random_bad_set": false
+  },
+  "replicates": {
+    "seeds": [5, 7, 11]
+  },
+  "mlflow": {
+    "enabled": true,
+    "tracking_uri": "",
+    "experiment": "neon_molecular_generation"
+  },
+  "output_dir": "results/objectives/guacamol_transformer_chelator_scope_development"
+}

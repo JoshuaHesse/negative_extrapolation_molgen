@@ -1,0 +1,44 @@
+# Large/generated data and model artifacts
+data/
+external/
+models/
+results/
+mlruns/
+wandb/
+checkpoints/
+paper/
+
+# Publish only the notebooks required to reproduce manuscript figures.
+notebooks/*
+!notebooks/260612_main_paper_figures.ipynb
+!notebooks/260617_si_figures_and_statistics.ipynb
+!notebooks/paper_plot_data_loaders.py
+
+# Model/checkpoint formats
+*.pt
+*.pth
+*.ckpt
+*.model
+*.prior
+*.safetensors
+*.pkl
+*.joblib
+
+# Python/runtime caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+.venv/
+venv/
+.agents/
+.codex/
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+texput.log

@@ -1,0 +1,13 @@
+.git
+.venv
+data
+models
+results
+external/BarlowDTI
+external/semla-flow
+external/FlowMol
+external/flowmol
+paper
+notebooks/figures
+__pycache__
+.ipynb_checkpoints

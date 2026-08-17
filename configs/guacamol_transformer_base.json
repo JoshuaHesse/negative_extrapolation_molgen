@@ -1,0 +1,36 @@
+{
+  "data": {
+    "train_smiles": "data/guacamol_v1_train.smiles",
+    "limit": null
+  },
+  "model": {
+    "architecture": "transformer",
+    "embedding_dim": 256,
+    "num_heads": 8,
+    "num_layers": 4,
+    "feedforward_dim": 1024,
+    "dropout": 0.1,
+    "max_len": 192
+  },
+  "training": {
+    "epochs": 8,
+    "batch_size": 256,
+    "learning_rate": 0.0005
+  },
+  "sampling": {
+    "initial_samples": 30000,
+    "eval_samples": 10000,
+    "batch_size": 512,
+    "max_len": 150,
+    "temperature": 0.75
+  },
+  "replicates": {
+    "seeds": [13, 17, 19, 23, 29, 31, 37, 41, 43, 47]
+  },
+  "mlflow": {
+    "enabled": true,
+    "tracking_uri": "",
+    "experiment": "neon_molecular_generation"
+  },
+  "output_dir": "results/guacamol_transformer_base"
+}

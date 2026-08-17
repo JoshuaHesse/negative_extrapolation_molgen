@@ -1,0 +1,49 @@
+{
+  "base_results_dir": "results/guacamol_transformer_base",
+  "objective": {
+    "name": "reactive_removal"
+  },
+  "training": {
+    "bad_epochs": 1,
+    "positive_epochs": 1,
+    "batch_size": 256,
+    "learning_rate": 0.0005
+  },
+  "sampling": {
+    "eval_samples": 10000,
+    "batch_size": 512,
+    "max_len": 150,
+    "temperature": 0.75
+  },
+  "selection": {
+    "mode": "binary",
+    "bad_where": "reactive_hit",
+    "bad_value": 1.0,
+    "good_where": "reactive_hit",
+    "good_value": 0.0,
+    "balance": true,
+    "max_smiles": 5000,
+    "min_smiles": 500
+  },
+  "neon": {
+    "lambda_values": [0.5, 0.75, 1.0],
+    "parameter_scopes": [
+      {
+        "name": "last_block_output",
+        "include": ["transformer.layers.3.", "output."]
+      }
+    ]
+  },
+  "controls": {
+    "random_bad_set": true
+  },
+  "replicates": {
+    "seeds": [13, 17, 19, 23, 29, 31, 37, 41, 43, 47]
+  },
+  "mlflow": {
+    "enabled": true,
+    "tracking_uri": "",
+    "experiment": "neon_molecular_generation"
+  },
+  "output_dir": "results/objectives/guacamol_transformer_reactive_lastblock_final"
+}

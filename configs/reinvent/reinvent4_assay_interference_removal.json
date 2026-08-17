@@ -1,0 +1,19 @@
+{
+  "external_model": "REINVENT4",
+  "external_repo": "external/REINVENT4",
+  "results_dir": "results/external/reinvent4",
+  "objective": "assay_interference_removal",
+  "selection": {
+    "mode": "binary",
+    "bad_where": "assay_interference_hit",
+    "bad_value": 1.0,
+    "good_where": "assay_interference_hit",
+    "good_value": 0.0,
+    "balance": true,
+    "max_smiles": 5000,
+    "min_smiles": 500
+  },
+  "neon": {
+    "lambda_values": [0.25, 0.5, 0.75, 1.0]
+  }
+}
