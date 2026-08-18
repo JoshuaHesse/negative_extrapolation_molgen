@@ -184,9 +184,8 @@ large generated samples and checkpoints are distributed separately. The data
 manifest distinguishes project-owned study outputs, third-party inputs, and
 transient checkpoints that are deliberately not archived.
 
-## License and Citation
+## License
 
-This repository is released under the [MIT License](LICENSE). Citation metadata
-are provided in [`CITATION.cff`](CITATION.cff). The licenses and citation
-requirements of GuacaMol, REINVENT4, SemlaFlow, PoseBusters, RDKit, FCD, and
-their pretrained assets apply independently.
+This repository is released under the [MIT License](LICENSE). The licenses and
+citation requirements of GuacaMol, REINVENT4, SemlaFlow, PoseBusters, RDKit,
+FCD, and their pretrained assets apply independently.

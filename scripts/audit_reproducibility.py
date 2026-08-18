@@ -40,7 +40,6 @@ def static_audit(errors: list[str]) -> None:
     required = [
         "README.md",
         "LICENSE",
-        "CITATION.cff",
         "Makefile",
         "Dockerfile",
         "docs/reproduction.md",
