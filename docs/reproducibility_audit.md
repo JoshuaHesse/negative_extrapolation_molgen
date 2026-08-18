@@ -25,6 +25,14 @@ loading these outputs, arranging panels, and applying visual styling.
 - Generated checkpoints are dispensable after sampling when reconstruction
   inputs and norm metadata remain.
 
+The audit rules are executable:
+
+```bash
+make audit          # public source, configs, notebooks, and Make references
+make audit-inputs   # external Git revisions and SHA-256 checksums
+make audit-results  # ten-seed completion artifacts and final analyses
+```
+
 ## Notebook Boundary
 
 The two public notebooks are:

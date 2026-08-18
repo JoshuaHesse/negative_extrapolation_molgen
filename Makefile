@@ -18,15 +18,34 @@ SEMLAFLOW_FOUR_LIABILITY_MODELS ?= base random_tuned positive_tuned bad_tuned fu
 .PHONY: build test gpu-shell guacamol-download guacamol-epoch-sensitivity-scaffolds guacamol-profile guacamol-rnn-assay-interference-removal-from-base guacamol-rnn-charged-motif-removal-from-base guacamol-rnn-chelator-removal-from-base guacamol-rnn-qed-from-base guacamol-rnn-reactive-epoch-sensitivity guacamol-rnn-reactive-removal-from-base guacamol-rnn-specific-liability-objectives guacamol-train-rnn-base guacamol-train-transformer-base guacamol-transformer-assay-interference-lastblock-final-from-base guacamol-transformer-charged-motif-lastblock-final-from-base guacamol-transformer-chelator-lastblock-final-from-base guacamol-transformer-lastblock-specific-liability-objectives guacamol-transformer-qed-from-base guacamol-transformer-reactive-epoch-sensitivity guacamol-transformer-reactive-lastblock-final-from-base paper-control-refresh paper-fcd-distances paper-fcd-mw-calibration paper-fcd-mw-calibration-guacamol-rnn paper-fcd-mw-calibration-guacamol-transformer paper-fcd-mw-calibration-reinvent paper-guacamol-base-replicates paper-guacamol-chelator-diversity paper-guacamol-liability-replicates paper-guacamol-qed-replicates paper-guacamol-random-controls paper-guacamol-rnn-chelator-fcd paper-guacamol-rnn-chelator-reference paper-guacamol-transformer-chelator-fcd paper-post-control-analysis paper-refresh-fdd paper-refresh-guacamol-rnn-fdd paper-refresh-guacamol-transformer-fdd paper-refresh-reinvent-fdd paper-reinvent-chelator-fcd paper-reinvent-liability-replicates paper-reproduction paper-semlaflow-confirmatory paper-si-tables paper-statistics paper-transformer-scope-development-data publication-si-tables reinvent-assay-interference-replicates reinvent-assay-interference-replicates-analyze reinvent-assay-interference-replicates-resume reinvent-build reinvent-charged-motif-replicates reinvent-charged-motif-replicates-analyze reinvent-charged-motif-replicates-resume reinvent-chelator-replicates reinvent-chelator-replicates-analyze reinvent-chelator-replicates-resume reinvent-reactive-epoch-sensitivity reinvent-reactive-replicates reinvent-reactive-replicates-analyze reinvent-reactive-replicates-resume reinvent-shell reinvent-specific-liability-replicates semlaflow-build semlaflow-env-check semlaflow-four-liability-analysis-export semlaflow-four-liability-distribution-distance semlaflow-four-liability-diversity semlaflow-four-liability-joint-replicates semlaflow-four-liability-joint-replicates-posebusters semlaflow-four-liability-joint-replicates-summarize semlaflow-four-liability-paper-analysis semlaflow-four-liability-positive-corrected-replicates semlaflow-four-liability-structural-analysis semlaflow-four-liability-usable-scaffolds semlaflow-geom-drugs-50000-baseline-replicates shell
 
 build:
-	docker compose build
+	docker compose build neon-molgen
 
 test:
 	docker compose run --rm neon-molgen pytest -q
 
-.PHONY: lint
+.PHONY: audit audit-inputs audit-results figures lint
 lint:
 	docker compose run --rm neon-molgen ruff check \
 		neon_molgen scripts tests notebooks/paper_plot_data_loaders.py
+
+audit:
+	docker compose run --rm neon-molgen python scripts/audit_reproducibility.py
+
+audit-inputs:
+	docker compose run --rm neon-molgen python scripts/audit_reproducibility.py --inputs
+
+audit-results:
+	docker compose run --rm neon-molgen python scripts/audit_reproducibility.py --results
+
+figures:
+	docker compose run --rm neon-molgen jupyter nbconvert \
+		--to notebook --execute --ExecutePreprocessor.timeout=-1 \
+		--output-dir /tmp --output main_paper_figures.executed.ipynb \
+		notebooks/260612_main_paper_figures.ipynb
+	docker compose run --rm neon-molgen jupyter nbconvert \
+		--to notebook --execute --ExecutePreprocessor.timeout=-1 \
+		--output-dir /tmp --output si_figures_and_statistics.executed.ipynb \
+		notebooks/260617_si_figures_and_statistics.ipynb
 
 semlaflow-build:
 	docker compose build semlaflow

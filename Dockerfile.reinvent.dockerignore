@@ -1,0 +1,5 @@
+*
+!Dockerfile.reinvent
+!external/
+!external/REINVENT4/
+!external/REINVENT4/**

@@ -1,0 +1,79 @@
+{
+  "confirmatory_seeds": [13, 17, 19, 23, 29, 31, 37, 41, 43, 47],
+  "repositories": [
+    {
+      "name": "REINVENT4",
+      "path": "external/REINVENT4",
+      "url": "https://github.com/MolecularAI/REINVENT4.git",
+      "commit": "d082b365713771c7e6de2b7053fb3444bccc0918"
+    },
+    {
+      "name": "SemlaFlow",
+      "path": "external/semla-flow",
+      "url": "https://github.com/rssrwn/semla-flow.git",
+      "commit": "3f43103d3af138b86dbe9f29fe8085e83f9a6283"
+    }
+  ],
+  "input_files": [
+    {
+      "name": "GuacaMol v1 training SMILES",
+      "path": "data/guacamol_v1_train.smiles",
+      "sha256": "3c67ee945f351dbbdc02d9016da22efaffc32a39d882021b6f213d5cd60b6a80"
+    },
+    {
+      "name": "REINVENT4 reinvent prior",
+      "path": "external/REINVENT4/priors/reinvent.prior",
+      "sha256": "b6513ec6dbc54c87ea45cdbf9b4aaefadd7652548b74175366b27f12ec5732fe"
+    },
+    {
+      "name": "SemlaFlow GEOM-Drugs checkpoint",
+      "path": "external/semla-flow/assets/models/geom-drugs/200epochs.ckpt",
+      "sha256": "1c159527816b02e7116b9a22394e8501aada7aa119382a64a9e178d641ba570d"
+    },
+    {
+      "name": "SemlaFlow GEOM-Drugs training data",
+      "path": "external/semla-flow/assets/data/geom-drugs/smol/train.smol",
+      "sha256": "5230c4fb4e6c3d2f5a1a75a056022de0ef65c1c94ba754db96f074be3b7ae09b"
+    },
+    {
+      "name": "SemlaFlow GEOM-Drugs validation data",
+      "path": "external/semla-flow/assets/data/geom-drugs/smol/val.smol",
+      "sha256": "7607f9549c625aee67a052daec25198406ac9676fbf3b237707ff41b92d9c004"
+    },
+    {
+      "name": "SemlaFlow GEOM-Drugs test data",
+      "path": "external/semla-flow/assets/data/geom-drugs/smol/test.smol",
+      "sha256": "0906ea8d02d836821f72b85101d55d43daa5e47687b28d73cbf764745d09effc"
+    }
+  ],
+  "seed_result_groups": [
+    {"name": "GuacaMol RNN base", "root": "results/guacamol_rnn_base", "pattern": "seed_{seed}/summary.csv"},
+    {"name": "GuacaMol Transformer base", "root": "results/guacamol_transformer_base", "pattern": "seed_{seed}/summary.csv"},
+    {"name": "GuacaMol RNN QED", "root": "results/objectives/guacamol_rnn_qed", "pattern": "seed_{seed}/summary.csv"},
+    {"name": "GuacaMol Transformer QED", "root": "results/objectives/guacamol_transformer_qed", "pattern": "seed_{seed}/summary.csv"},
+    {"name": "GuacaMol RNN reactive", "root": "results/objectives/guacamol_rnn_reactive_removal", "pattern": "seed_{seed}/summary.csv"},
+    {"name": "GuacaMol RNN metal-binding", "root": "results/objectives/guacamol_rnn_chelator_removal", "pattern": "seed_{seed}/summary.csv"},
+    {"name": "GuacaMol RNN charged motif", "root": "results/objectives/guacamol_rnn_charged_motif_removal", "pattern": "seed_{seed}/summary.csv"},
+    {"name": "GuacaMol RNN assay interference", "root": "results/objectives/guacamol_rnn_assay_interference_removal", "pattern": "seed_{seed}/summary.csv"},
+    {"name": "GuacaMol Transformer reactive", "root": "results/objectives/guacamol_transformer_reactive_lastblock_final", "pattern": "seed_{seed}/summary.csv"},
+    {"name": "GuacaMol Transformer metal-binding", "root": "results/objectives/guacamol_transformer_chelator_lastblock_final", "pattern": "seed_{seed}/summary.csv"},
+    {"name": "GuacaMol Transformer charged motif", "root": "results/objectives/guacamol_transformer_charged_motif_lastblock_final", "pattern": "seed_{seed}/summary.csv"},
+    {"name": "GuacaMol Transformer assay interference", "root": "results/objectives/guacamol_transformer_assay_interference_lastblock_final", "pattern": "seed_{seed}/summary.csv"},
+    {"name": "REINVENT4 reactive", "root": "results/external/reinvent4/reactive_replicates", "pattern": "seed_{seed}/scores/summary.csv"},
+    {"name": "REINVENT4 metal-binding", "root": "results/external/reinvent4/chelator_replicates", "pattern": "seed_{seed}/scores/summary.csv"},
+    {"name": "REINVENT4 charged motif", "root": "results/external/reinvent4/charged_motif_replicates", "pattern": "seed_{seed}/scores/summary.csv"},
+    {"name": "REINVENT4 assay interference", "root": "results/external/reinvent4/assay_interference_replicates", "pattern": "seed_{seed}/scores/summary.csv"},
+    {"name": "SemlaFlow joint liability", "root": "results/external/semlaflow/four_liability_joint_replicates", "pattern": "seed_{seed}/joint/summary.csv"},
+    {"name": "SemlaFlow random correction reference", "root": "results/external/semlaflow/four_liability_joint_replicates", "pattern": "seed_{seed}/random_reference/summary.csv"},
+    {"name": "SemlaFlow positive correction reference", "root": "results/external/semlaflow/four_liability_joint_replicates", "pattern": "seed_{seed}/positive_tuning/summary.csv"}
+  ],
+  "analysis_files": [
+    "results/paper_statistics/confirmatory_endpoint_values.csv",
+    "results/paper_statistics/confirmatory_paired_comparisons.csv",
+    "results/publication/tables/si_liability_smarts.tex",
+    "results/external/semlaflow/four_liability_joint_replicates/analysis/aggregate_summary.csv",
+    "results/external/semlaflow/four_liability_joint_replicates/analysis/posebusters_replicate_metrics.csv",
+    "results/external/semlaflow/four_liability_joint_replicates/analysis/diversity/diversity_metrics.csv",
+    "results/external/semlaflow/four_liability_joint_replicates/analysis/distribution_distance_fcd/distribution_distance_metrics.csv"
+  ]
+}

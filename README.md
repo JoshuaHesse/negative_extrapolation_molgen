@@ -66,6 +66,7 @@ Container Toolkit.
 make build
 make test
 make lint
+make audit
 make reinvent-build
 make semlaflow-build
 make semlaflow-env-check
@@ -144,6 +145,8 @@ make paper-post-control-analysis
 make paper-fcd-distances
 make paper-statistics
 make publication-si-tables
+make audit-results
+make figures
 ```
 
 Generated statistical tables are written to
@@ -157,6 +160,9 @@ See [`docs/reproduction.md`](docs/reproduction.md) for workflow details and
 expected outputs.
 The audited package versions are listed in
 [`docs/software_environment.md`](docs/software_environment.md).
+The exact input revisions, checksums, confirmatory seeds, and expected result
+artifacts are defined in
+[`configs/reproducibility_manifest.json`](configs/reproducibility_manifest.json).
 
 ## Controls and Statistics
 

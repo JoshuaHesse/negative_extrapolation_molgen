@@ -11,9 +11,11 @@ third-party source trees and checkpoints separately as listed in
 
 ```bash
 make build
+make audit
 make reinvent-build
 make semlaflow-build
 make semlaflow-env-check
+make audit-inputs
 ```
 
 Use `NEON_DISABLE_MLFLOW=1` unless an MLflow server is configured.
@@ -38,6 +40,7 @@ make paper-post-control-analysis
 make paper-fcd-distances
 make paper-statistics
 make publication-si-tables
+make audit-results
 ```
 
 FCD requires a CUDA-capable device in the current workflow. CPU-heavy analyses
@@ -46,10 +49,16 @@ is controlled by `FCD_JOBS`.
 
 ## 5. Regenerate Figures
 
-Run the public notebooks after restoring the result archive:
+Execute the public notebooks after restoring the result archive:
 
-1. `260612_main_paper_figures.ipynb`
-2. `260617_si_figures_and_statistics.ipynb`
+```bash
+make figures
+```
+
+This runs, in order:
+
+1. `notebooks/260612_main_paper_figures.ipynb`
+2. `notebooks/260617_si_figures_and_statistics.ipynb`
 
 Figures are exported as PNG, SVG, and PDF into the ignored
 `notebooks/figures/` directory. The notebooks do not define inferential tests or

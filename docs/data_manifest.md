@@ -38,9 +38,21 @@ external/semla-flow/assets/models/geom-drugs/200epochs.ckpt
 external/semla-flow/assets/data/geom-drugs/smol/
 ```
 
-Use the official REINVENT4 and SemlaFlow repositories/releases corresponding to
-the manuscript. Record release tags, download URLs, checksums, and access dates
-in the Zenodo metadata before deposition.
+Use the exact revisions and SHA-256 checksums in
+`configs/reproducibility_manifest.json`; verify them with `make audit-inputs`.
+
+- REINVENT4: commit `d082b365713771c7e6de2b7053fb3444bccc0918` from
+  `https://github.com/MolecularAI/REINVENT4.git`. Public priors are distributed
+  at `https://doi.org/10.5281/zenodo.15641296`.
+- SemlaFlow: commit `3f43103d3af138b86dbe9f29fe8085e83f9a6283` from
+  `https://github.com/rssrwn/semla-flow.git`. The GEOM-Drugs checkpoint and
+  processed data are distributed through the Google Drive folder linked in the
+  upstream README.
+
+These revisions and files were verified on 2026-08-18. Add the project-owned
+Zenodo DOI here before manuscript submission. Until that archive is deposited,
+an independent user can test the code but cannot reproduce the exact archived
+sample-level analyses from GitHub alone.
 
 ## Not Publicly Distributed
 

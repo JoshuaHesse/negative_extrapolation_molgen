@@ -21,6 +21,7 @@ Core direct dependencies are pinned in `requirements.txt`. The REINVENT4 image
 is installed with the upstream `install.py` workflow, while SemlaFlow-specific
 compatibility pins are recorded in `Dockerfile.semlaflow`.
 
-Before archival release, record the exact Git commit hashes for the external
-REINVENT4 and SemlaFlow source trees and checksums for their prior/checkpoint
-files in the Zenodo metadata.
+Base-image digests are pinned in the Dockerfiles. Exact external Git revisions
+and input checksums are recorded in `configs/reproducibility_manifest.json`.
+The figure environment additionally pins `ipykernel==6.29.4` and
+`nbconvert==7.16.3` in `requirements-notebooks.txt`.
