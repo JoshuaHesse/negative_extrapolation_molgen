@@ -166,6 +166,9 @@ artifacts are defined in
 The project-owned Zenodo data bundle can be assembled with
 `make zenodo-archive`; see [`docs/data_manifest.md`](docs/data_manifest.md) for
 its inclusion and exclusion policy.
+The dataset DOI is
+[`10.5281/zenodo.21991931`](https://doi.org/10.5281/zenodo.21991931); the record
+will resolve publicly after the current Zenodo draft is published.
 
 ## Controls and Statistics
 

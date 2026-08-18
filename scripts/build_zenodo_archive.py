@@ -167,6 +167,7 @@ for the associated manuscript.
 
 - Code repository: https://github.com/JoshuaHesse/negative_extrapolation_molgen
 - Code commit: `{commit}`
+- Data DOI: https://doi.org/{manifest['project_data_doi']}
 - Confirmatory seeds: {', '.join(map(str, manifest['confirmatory_seeds']))}
 - Generated: {generated_at}
 - Payload files: {len(selected)}
@@ -208,6 +209,7 @@ selection and epoch-sensitivity studies.
         "archive_version": 1,
         "code_repository": "https://github.com/JoshuaHesse/negative_extrapolation_molgen",
         "code_commit": commit,
+        "project_data_doi": manifest["project_data_doi"],
         "confirmatory_seeds": manifest["confirmatory_seeds"],
         "generated_at_utc": generated_at,
         "payload_file_count": len(selected),

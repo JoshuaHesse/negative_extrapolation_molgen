@@ -49,10 +49,12 @@ Use the exact revisions and SHA-256 checksums in
   processed data are distributed through the Google Drive folder linked in the
   upstream README.
 
-These revisions and files were verified on 2026-08-18. Add the project-owned
-Zenodo DOI here before manuscript submission. Until that archive is deposited,
-an independent user can test the code but cannot reproduce the exact archived
-sample-level analyses from GitHub alone.
+These revisions and files were verified on 2026-08-18. The project-owned data
+archive has the reserved DOI
+[`10.5281/zenodo.21991931`](https://doi.org/10.5281/zenodo.21991931). The record
+remains a Zenodo draft until publication. Until it is published, an independent
+user can test the code but cannot retrieve the exact archived sample-level
+analyses from GitHub alone.
 
 Build the project-owned upload bundle with:
 
