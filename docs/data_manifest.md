@@ -54,6 +54,18 @@ Zenodo DOI here before manuscript submission. Until that archive is deposited,
 an independent user can test the code but cannot reproduce the exact archived
 sample-level analyses from GitHub alone.
 
+Build the project-owned upload bundle with:
+
+```bash
+make zenodo-archive-dry-run
+make zenodo-archive
+```
+
+The builder selects the confirmatory paper results, records the current Git
+commit, writes per-file SHA-256 checksums, excludes third-party and transient
+artifacts, and verifies the resulting `.tar.zst` archive. The upload-ready files
+are written under `results/zenodo_release/`.
+
 ## Not Publicly Distributed
 
 - manuscript source in `paper/`;

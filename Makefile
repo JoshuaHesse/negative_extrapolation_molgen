@@ -23,7 +23,7 @@ build:
 test:
 	docker compose run --rm neon-molgen pytest -q
 
-.PHONY: audit audit-inputs audit-results figures lint
+.PHONY: audit audit-inputs audit-results figures lint zenodo-archive zenodo-archive-dry-run
 lint:
 	docker compose run --rm neon-molgen ruff check \
 		neon_molgen scripts tests notebooks/paper_plot_data_loaders.py
@@ -46,6 +46,12 @@ figures:
 		--to notebook --execute --ExecutePreprocessor.timeout=-1 \
 		--output-dir /tmp --output si_figures_and_statistics.executed.ipynb \
 		notebooks/260617_si_figures_and_statistics.ipynb
+
+zenodo-archive-dry-run:
+	python3 scripts/build_zenodo_archive.py --dry-run
+
+zenodo-archive:
+	python3 scripts/build_zenodo_archive.py
 
 semlaflow-build:
 	docker compose build semlaflow

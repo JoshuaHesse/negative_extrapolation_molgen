@@ -163,6 +163,9 @@ The audited package versions are listed in
 The exact input revisions, checksums, confirmatory seeds, and expected result
 artifacts are defined in
 [`configs/reproducibility_manifest.json`](configs/reproducibility_manifest.json).
+The project-owned Zenodo data bundle can be assembled with
+`make zenodo-archive`; see [`docs/data_manifest.md`](docs/data_manifest.md) for
+its inclusion and exclusion policy.
 
 ## Controls and Statistics
 
