@@ -78,9 +78,10 @@ The core Python package can also be installed locally:
 python -m pip install -e '.[dev]'
 ```
 
-REINVENT4 and SemlaFlow are not vendored. Place their source trees and official
-weights under the paths listed in [`docs/data_manifest.md`](docs/data_manifest.md)
-before building the corresponding images.
+REINVENT4 and SemlaFlow are not vendored. The pinned clone, download, and file
+placement commands are listed in
+[`docs/data_manifest.md`](docs/data_manifest.md). Run those commands before
+building the corresponding images.
 
 MLflow logging is optional. Set `MLFLOW_TRACKING_URI` to use a tracking server,
 or set `NEON_DISABLE_MLFLOW=1` to disable logging.

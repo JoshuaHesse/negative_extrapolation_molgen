@@ -24,6 +24,7 @@
     {
       "name": "REINVENT4 reinvent prior",
       "path": "external/REINVENT4/priors/reinvent.prior",
+      "source": "https://zenodo.org/api/records/15641297/files/reinvent.prior/content",
       "sha256": "b6513ec6dbc54c87ea45cdbf9b4aaefadd7652548b74175366b27f12ec5732fe"
     },
     {
@@ -69,6 +70,7 @@
     {"name": "SemlaFlow positive correction reference", "root": "results/external/semlaflow/four_liability_joint_replicates", "pattern": "seed_{seed}/positive_tuning/summary.csv"}
   ],
   "analysis_files": [
+    "results/objectives/guacamol_transformer_chelator_scope_development/objective_metrics.csv",
     "results/paper_statistics/confirmatory_endpoint_values.csv",
     "results/paper_statistics/confirmatory_paired_comparisons.csv",
     "results/publication/tables/si_liability_smarts.tex",

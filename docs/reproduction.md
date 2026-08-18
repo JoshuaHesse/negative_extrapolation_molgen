@@ -2,10 +2,19 @@
 
 ## 1. Restore Inputs
 
-Clone the repository, then restore the project-owned data archive so that its
-`results/` and `data/` directories sit at the repository root. Download
-third-party source trees and checkpoints separately as listed in
-`data_manifest.md`.
+Clone the repository, then extract the project-owned data archive into a
+temporary directory and copy only its `results/` tree into the checkout. Do
+not strip the archive's top-level directory directly into the checkout,
+because the archive also contains release metadata named `README.md`.
+
+```bash
+mkdir -p /tmp/ne-data
+tar --zstd -xf negative_extrapolation_molgen_data_v1.tar.zst -C /tmp/ne-data
+cp -a /tmp/ne-data/negative_extrapolation_molgen_data_v1/results/. results/
+```
+
+Download third-party source trees and checkpoints separately using the pinned
+commands in `data_manifest.md`.
 
 ## 2. Build Environments
 

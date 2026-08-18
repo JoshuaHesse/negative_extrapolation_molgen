@@ -10,8 +10,8 @@ The Zenodo deposit should preserve repository-relative paths and include:
   appropriate;
 - `results/guacamol_rnn_base/` and `results/guacamol_transformer_base/`;
 - GuacaMol QED and four-liability outputs under `results/objectives/`;
-- Transformer scope-development and epoch-sensitivity outputs under
-  `results/development/`;
+- compact Transformer scope-development summaries under `results/objectives/`
+  and epoch-sensitivity outputs under `results/development/`;
 - the four REINVENT4 liability outputs under `results/external/reinvent4/`;
 - SemlaFlow 50,000-sample base generations and confirmatory joint-liability
   outputs under `results/external/semlaflow/`;
@@ -42,12 +42,43 @@ Use the exact revisions and SHA-256 checksums in
 `configs/reproducibility_manifest.json`; verify them with `make audit-inputs`.
 
 - REINVENT4: commit `d082b365713771c7e6de2b7053fb3444bccc0918` from
-  `https://github.com/MolecularAI/REINVENT4.git`. Public priors are distributed
-  at `https://doi.org/10.5281/zenodo.15641296`.
+  `https://github.com/MolecularAI/REINVENT4.git`. The study uses
+  `reinvent.prior` from immutable Zenodo record
+  `https://doi.org/10.5281/zenodo.15641297`. The concept DOI resolves to newer
+  releases that no longer contain this exact file.
 - SemlaFlow: commit `3f43103d3af138b86dbe9f29fe8085e83f9a6283` from
   `https://github.com/rssrwn/semla-flow.git`. The GEOM-Drugs checkpoint and
   processed data are distributed through the Google Drive folder linked in the
   upstream README.
+
+The following commands reproduce the third-party source setup from a clean
+checkout:
+
+```bash
+mkdir -p external
+git clone https://github.com/MolecularAI/REINVENT4.git external/REINVENT4
+git -C external/REINVENT4 checkout d082b365713771c7e6de2b7053fb3444bccc0918
+mkdir -p external/REINVENT4/priors
+curl -L --fail \
+  https://zenodo.org/api/records/15641297/files/reinvent.prior/content \
+  -o external/REINVENT4/priors/reinvent.prior
+
+git clone https://github.com/rssrwn/semla-flow.git external/semla-flow
+git -C external/semla-flow checkout 3f43103d3af138b86dbe9f29fe8085e83f9a6283
+python3 -m pip install --target /tmp/ne-gdown gdown==5.2.0
+PYTHONPATH=/tmp/ne-gdown python3 -m gdown --folder \
+  https://drive.google.com/drive/folders/1rHi5JzN05bsGRGQUcWRmDu-Ilfoa9EAT \
+  --remaining-ok -O /tmp/semlaflow-assets
+mkdir -p external/semla-flow/assets/data/geom-drugs/smol \
+  external/semla-flow/assets/models/geom-drugs
+cp /tmp/semlaflow-assets/data/geom-drugs/smol/{train,val,test}.smol \
+  external/semla-flow/assets/data/geom-drugs/smol/
+cp /tmp/semlaflow-assets/models/geom-drugs/200epochs.ckpt \
+  external/semla-flow/assets/models/geom-drugs/
+```
+
+Run `make guacamol-download` and then `make audit-inputs`. The audit verifies
+both repository revisions and every downloaded file hash.
 
 These revisions and files were verified on 2026-08-18. The project-owned data
 archive has the reserved DOI

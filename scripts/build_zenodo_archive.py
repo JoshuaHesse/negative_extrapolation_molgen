@@ -23,6 +23,17 @@ SUPPLEMENTARY_RESULT_ROOTS = (
     "results/cleanup_manifests",
 )
 
+# Compact development summaries used directly by the publication notebooks.
+# The full scope-screen sample tables are reproducible from the documented Make
+# target but are not needed in the release archive.
+SUPPLEMENTARY_RESULT_FILES = (
+    "results/objectives/guacamol_transformer_chelator_scope_development/aggregate_summary.csv",
+    "results/objectives/guacamol_transformer_chelator_scope_development/config.json",
+    "results/objectives/guacamol_transformer_chelator_scope_development/delta_metrics.csv",
+    "results/objectives/guacamol_transformer_chelator_scope_development/delta_summary.csv",
+    "results/objectives/guacamol_transformer_chelator_scope_development/objective_metrics.csv",
+)
+
 EXCLUDED_SUFFIXES = {
     ".ckpt",
     ".joblib",
@@ -136,6 +147,11 @@ def collect_files(manifest: dict) -> list[Path]:
             relative = path.relative_to(ROOT)
             if include_file(relative, confirmatory_seeds, development_root):
                 selected.add(relative)
+    for relative_text in SUPPLEMENTARY_RESULT_FILES:
+        relative = Path(relative_text)
+        if not (ROOT / relative).is_file():
+            raise FileNotFoundError(f"Required archive file is missing: {relative_text}")
+        selected.add(relative)
     return sorted(selected, key=lambda path: path.as_posix())
 
 
@@ -173,9 +189,11 @@ for the associated manuscript.
 - Payload files: {len(selected)}
 - Uncompressed payload size: {format_bytes(total_size)}
 
-Extract this archive at the root of a checkout of the recorded code commit. The
-stored `results/` paths then match the analysis and figure-generation commands
-documented in `docs/reproduction.md`.
+Extract this archive into a temporary directory, then copy the stored
+`results/` tree into a checkout of the recorded code commit. Do not strip this
+archive's top-level directory directly into the checkout because this release
+metadata also contains a file named `README.md`. Detailed commands are provided
+in `docs/reproduction.md` in the code repository.
 
 Validate the extracted payload from this directory with:
 
