@@ -62,7 +62,7 @@
     "seeds": [5, 7, 11]
   },
   "mlflow": {
-    "enabled": true,
+    "enabled": false,
     "tracking_uri": "",
     "experiment": "neon_molecular_generation"
   },

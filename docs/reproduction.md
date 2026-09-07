@@ -27,20 +27,38 @@ make semlaflow-env-check
 make audit-inputs
 ```
 
-Use `NEON_DISABLE_MLFLOW=1` unless an MLflow server is configured.
+MLflow is disabled by default. To enable remote tracking, export
+`MLFLOW_TRACKING_URI` before invoking a target. Alternatively,
+`NEON_ENABLE_MLFLOW=1` explicitly enables MLflow's default local backend.
 
 ## 3. Regenerate Models and Samples
 
 The broad confirmatory entry point is:
 
 ```bash
-NEON_DISABLE_MLFLOW=1 make paper-control-refresh
+make paper-control-refresh
 ```
 
 This runs the GuacaMol, REINVENT4, and SemlaFlow confirmatory generation
 workflows. Seed-level workflows skip outputs whose completion artifacts already
 exist. For resource scheduling, the component targets in the README are
 preferable because the model families use different images and runtimes.
+
+The SemlaFlow 50,000-molecule baseline pools are deliberately regenerated
+rather than distributed in the project archive. After restoring the public
+SemlaFlow assets, generate all ten seed-specific pools with:
+
+```bash
+make semlaflow-geom-drugs-50000-baseline-replicates
+```
+
+This writes
+`results/external/semlaflow/geom_drugs_50000_seed_<seed>/` for seeds 13, 17,
+19, 23, 29, 31, 37, 41, 43, and 47. The downstream SemlaFlow target consumes
+these directories. The Zenodo archive contains the exact selected
+training/validation molecules and final sample-level results used in the paper,
+so regenerating the large baseline pools is unnecessary when reproducing only
+the reported analyses and figures.
 
 ## 4. Regenerate Analyses
 
@@ -79,4 +97,7 @@ All final comparisons use the same ten seeds for each method. GPU kernels and
 third-party samplers may not be bitwise deterministic across software and
 hardware stacks. Re-analysis of the archived samples reproduces the exact
 reported tables; regeneration from checkpoints is intended to reproduce the
-reported distributional behavior.
+reported distributional behavior. The released GuacaMol objective runner uses
+separate deterministic seeds for each fine-tuning stage and each sampled model,
+so adding or omitting another evaluated method does not advance the sampled
+model's random-number stream.

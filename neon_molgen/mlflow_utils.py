@@ -17,13 +17,17 @@ def _environment_flag(name: str) -> bool:
 
 
 def mlflow_enabled(config: dict[str, Any]) -> bool:
-    # Long paper workflows run each seed in a fresh container. This override
-    # avoids repeating remote-connection retries when tracking is intentionally
-    # unavailable, while preserving config-driven tracking by default.
+    # Tracking is opt-in. Keep the disable flag as a backward-compatible
+    # override for existing private workflows.
     if _environment_flag("NEON_DISABLE_MLFLOW"):
         return False
     mlflow_config = config.get("mlflow", {})
-    return bool(mlflow_config.get("enabled", False) or os.getenv("MLFLOW_TRACKING_URI"))
+    return bool(
+        _environment_flag("NEON_ENABLE_MLFLOW")
+        or mlflow_config.get("enabled", False)
+        or mlflow_config.get("tracking_uri")
+        or os.getenv("MLFLOW_TRACKING_URI")
+    )
 
 
 def mlflow_backend(config: dict[str, Any]) -> tuple[str, str]:
@@ -68,7 +72,7 @@ def get_mlflow(config: dict[str, Any]):
     except ImportError as error:
         wrapped = ImportError(
             "MLflow tracking is enabled, but the mlflow package is not installed. "
-            "Install it in the container or disable config['mlflow']['enabled']."
+            "Install it in the container or remove the MLflow opt-in setting."
         )
         if mlflow_required(config):
             raise wrapped from error

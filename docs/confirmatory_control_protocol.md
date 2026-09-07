@@ -43,9 +43,9 @@ The aggregate refresh target is:
 make paper-control-refresh
 ```
 
-This aggregate target disables optional MLflow logging by default so an unavailable
-tracking server cannot interrupt the confirmatory computation. To retain MLflow
-tracking when the configured server is reachable, run
-`NEON_DISABLE_MLFLOW=0 make paper-control-refresh`.
+MLflow logging is disabled by default, so an unavailable tracking server cannot
+interrupt the confirmatory computation. To opt in, set `MLFLOW_TRACKING_URI` to
+the server URL before running the target. Set `NEON_ENABLE_MLFLOW=1` instead to
+use MLflow's default local backend.
 
 The component targets are documented in the Makefile and can be run independently to manage GPU availability.

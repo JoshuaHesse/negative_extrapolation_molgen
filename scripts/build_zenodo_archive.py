@@ -12,6 +12,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 REPRODUCIBILITY_MANIFEST = ROOT / "configs" / "reproducibility_manifest.json"
+ARCHIVE_VERSION = 1
 
 SUPPLEMENTARY_RESULT_ROOTS = (
     "results/development/guacamol_rnn_reactive_epoch_sensitivity_seed_11",
@@ -82,12 +83,6 @@ def sha256(path: Path) -> str:
         for chunk in iter(lambda: handle.read(4 * 1024 * 1024), b""):
             digest.update(chunk)
     return digest.hexdigest()
-
-
-def git_commit() -> str:
-    return subprocess.check_output(
-        ["git", "-C", str(ROOT), "rev-parse", "HEAD"], text=True
-    ).strip()
 
 
 def result_roots(manifest: dict) -> list[str]:
@@ -170,7 +165,6 @@ def write_release_metadata(
     selected: list[Path],
     checksums: dict[Path, str],
     manifest: dict,
-    commit: str,
 ) -> None:
     generated_at = datetime.now(timezone.utc).replace(microsecond=0).isoformat()
     total_size = sum((ROOT / relative).stat().st_size for relative in selected)
@@ -182,7 +176,7 @@ selection sets, analysis outputs, and reusable GuacaMol base checkpoints used
 for the associated manuscript.
 
 - Code repository: https://github.com/JoshuaHesse/negative_extrapolation_molgen
-- Code commit: `{commit}`
+- Archive version: {ARCHIVE_VERSION}
 - Data DOI: https://doi.org/{manifest['project_data_doi']}
 - Confirmatory seeds: {', '.join(map(str, manifest['confirmatory_seeds']))}
 - Generated: {generated_at}
@@ -190,10 +184,11 @@ for the associated manuscript.
 - Uncompressed payload size: {format_bytes(total_size)}
 
 Extract this archive into a temporary directory, then copy the stored
-`results/` tree into a checkout of the recorded code commit. Do not strip this
+`results/` tree into a checkout of the code repository. Do not strip this
 archive's top-level directory directly into the checkout because this release
-metadata also contains a file named `README.md`. Detailed commands are provided
-in `docs/reproduction.md` in the code repository.
+metadata also contains a file named `README.md`. Use the tagged software
+release associated with the publication for a frozen code snapshot. Detailed
+commands are provided in `docs/reproduction.md` in the code repository.
 
 Validate the extracted payload from this directory with:
 
@@ -208,6 +203,12 @@ and extrapolated checkpoints, logs, TensorBoard events, exploratory seed 11 from
 confirmatory experiments, and experiments not reported in the manuscript.
 Development seed 11 is retained only for the explicitly identified parameter-
 selection and epoch-sensitivity studies.
+
+The reconstructible SemlaFlow 50,000-molecule baseline pools are not included.
+Regenerate them with the documented
+`make semlaflow-geom-drugs-50000-baseline-replicates` target after restoring the
+public SemlaFlow assets. The exact selected `.smol` training and validation files
+used for the reported SemlaFlow edits are included under `results/`.
 """
     (staging_root / "README.md").write_text(readme)
     shutil.copy2(REPRODUCIBILITY_MANIFEST, staging_root / "reproducibility_manifest.json")
@@ -224,9 +225,8 @@ selection and epoch-sensitivity studies.
             handle.write(f"{checksums[relative]}  {relative.as_posix()}\n")
 
     metadata = {
-        "archive_version": 1,
+        "archive_version": ARCHIVE_VERSION,
         "code_repository": "https://github.com/JoshuaHesse/negative_extrapolation_molgen",
-        "code_commit": commit,
         "project_data_doi": manifest["project_data_doi"],
         "confirmatory_seeds": manifest["confirmatory_seeds"],
         "generated_at_utc": generated_at,
@@ -326,7 +326,7 @@ def main() -> None:
         if index % 250 == 0:
             print(f"checksummed {index}/{len(selected)} files", flush=True)
 
-    write_release_metadata(staging_root, selected, checksums, manifest, git_commit())
+    write_release_metadata(staging_root, selected, checksums, manifest)
     stage_files(staging_root, selected)
 
     archive_path = output_dir / args.archive_name

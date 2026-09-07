@@ -8,7 +8,10 @@ services:
     working_dir: /workspace/neon_molecular_generation
     environment:
       PYTHONPATH: /workspace/neon_molecular_generation
+      NEON_ENABLE_MLFLOW: ${NEON_ENABLE_MLFLOW:-0}
       NEON_DISABLE_MLFLOW: ${NEON_DISABLE_MLFLOW:-0}
+      MLFLOW_TRACKING_URI: ${MLFLOW_TRACKING_URI:-}
+      MLFLOW_EXPERIMENT_NAME: ${MLFLOW_EXPERIMENT_NAME:-neon_molecular_generation}
     volumes:
       - .:/workspace/neon_molecular_generation
       - neon_molgen_cache:/root/.cache
@@ -25,7 +28,10 @@ services:
     working_dir: /workspace/neon_molecular_generation
     environment:
       PYTHONPATH: /workspace/neon_molecular_generation
+      NEON_ENABLE_MLFLOW: ${NEON_ENABLE_MLFLOW:-0}
       NEON_DISABLE_MLFLOW: ${NEON_DISABLE_MLFLOW:-0}
+      MLFLOW_TRACKING_URI: ${MLFLOW_TRACKING_URI:-}
+      MLFLOW_EXPERIMENT_NAME: ${MLFLOW_EXPERIMENT_NAME:-neon_molecular_generation}
     volumes:
       - .:/workspace/neon_molecular_generation
       - reinvent4_cache:/root/.cache
@@ -42,7 +48,10 @@ services:
     working_dir: /workspace/neon_molecular_generation
     environment:
       PYTHONPATH: /workspace/neon_molecular_generation:/workspace/neon_molecular_generation/external/semla-flow
+      NEON_ENABLE_MLFLOW: ${NEON_ENABLE_MLFLOW:-0}
       NEON_DISABLE_MLFLOW: ${NEON_DISABLE_MLFLOW:-0}
+      MLFLOW_TRACKING_URI: ${MLFLOW_TRACKING_URI:-}
+      MLFLOW_EXPERIMENT_NAME: ${MLFLOW_EXPERIMENT_NAME:-neon_molecular_generation}
     volumes:
       - .:/workspace/neon_molecular_generation
       - semlaflow_cache:/root/.cache

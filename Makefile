@@ -580,8 +580,6 @@ paper-reinvent-liability-replicates:
 
 paper-semlaflow-confirmatory: semlaflow-geom-drugs-50000-baseline-replicates semlaflow-four-liability-positive-corrected-replicates semlaflow-four-liability-joint-replicates-posebusters semlaflow-four-liability-joint-replicates-summarize
 
-paper-control-refresh: export NEON_DISABLE_MLFLOW ?= 1
-
 paper-control-refresh: paper-guacamol-base-replicates paper-guacamol-qed-replicates paper-guacamol-liability-replicates paper-guacamol-random-controls paper-reinvent-liability-replicates paper-semlaflow-confirmatory
 
 paper-post-control-analysis: paper-guacamol-chelator-diversity paper-guacamol-rnn-chelator-fcd paper-guacamol-transformer-chelator-fcd paper-reinvent-chelator-fcd paper-fcd-mw-calibration semlaflow-four-liability-structural-analysis semlaflow-four-liability-usable-scaffolds semlaflow-four-liability-paper-analysis

@@ -5,6 +5,9 @@ models
 results
 external
 paper
+paper.zip
 notebooks/figures
 __pycache__
 .ipynb_checkpoints
+.pytest_cache
+.ruff_cache

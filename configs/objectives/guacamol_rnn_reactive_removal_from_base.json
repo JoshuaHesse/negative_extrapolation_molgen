@@ -35,7 +35,7 @@
     "seeds": [13, 17, 19, 23, 29, 31, 37, 41, 43, 47]
   },
   "mlflow": {
-    "enabled": true,
+    "enabled": false,
     "tracking_uri": "",
     "experiment": "neon_molecular_generation"
   },

@@ -2,9 +2,12 @@ from __future__ import annotations
 
 import argparse
 import copy
+import hashlib
 import json
+import random
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import torch
 
@@ -34,6 +37,20 @@ DEFAULT_NEON_SCOPE = {
     "exclude": None,
 }
 RANDOM_CONTROL_REFRESH_DEFINITION = "trained_random_global_scope_l2_v1"
+
+
+def seed_everything(seed: int) -> None:
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(seed)
+
+
+def derive_seed(seed: int, namespace: str) -> int:
+    """Derive a stable stage seed without depending on Python's salted hash."""
+    digest = hashlib.sha256(f"{seed}:{namespace}".encode()).digest()
+    return int.from_bytes(digest[:8], "big") % (2**31)
 
 
 def select_tail(
@@ -494,7 +511,10 @@ def evaluate_model(
     reference_canonical_smiles: set[str],
     reference_scaffold_counts: dict[str, int],
     run_config: dict,
+    sampling_seed: int | None = None,
 ) -> dict:
+    if sampling_seed is not None:
+        seed_everything(sampling_seed)
     sampling = config["sampling"]
     smiles = sample_smiles(
         model,
@@ -635,6 +655,7 @@ def run_seed(
                     "Original bad checkpoint is unavailable; deterministically "
                     "reconstructing the bad-set update from the saved selection."
                 )
+            seed_everything(seed + 1)
             bad_model = clone_model(model)
             bad_model, bad_history = train_model_with_history(
                 bad_model,
@@ -659,6 +680,7 @@ def run_seed(
 
         positive_model = None
         if not refresh_random_controls:
+            seed_everything(seed + 2)
             positive_model = clone_model(model)
             positive_model, positive_history = train_model_with_history(
                 positive_model,
@@ -683,6 +705,7 @@ def run_seed(
 
         random_model = None
         if random_smiles:
+            seed_everything(seed + 3)
             random_model = clone_model(model)
             random_model, random_history = train_model_with_history(
                 random_model,
@@ -749,6 +772,7 @@ def run_seed(
                     reference_canonical_smiles=reference_canonical_smiles,
                     reference_scaffold_counts=reference_scaffold_counts,
                     run_config=run_config,
+                    sampling_seed=derive_seed(seed, "sample:positive"),
                 ),
                 evaluate_model(
                     "bad",
@@ -760,6 +784,7 @@ def run_seed(
                     reference_canonical_smiles=reference_canonical_smiles,
                     reference_scaffold_counts=reference_scaffold_counts,
                     run_config=run_config,
+                    sampling_seed=derive_seed(seed, "sample:bad"),
                 ),
             ]
         if random_model is not None:
@@ -774,6 +799,7 @@ def run_seed(
                     reference_canonical_smiles=reference_canonical_smiles,
                     reference_scaffold_counts=reference_scaffold_counts,
                     run_config=run_config,
+                    sampling_seed=derive_seed(seed, "sample:random_finetune"),
                 )
             )
 
@@ -828,6 +854,7 @@ def run_seed(
                             reference_canonical_smiles=reference_canonical_smiles,
                             reference_scaffold_counts=reference_scaffold_counts,
                             run_config=run_config,
+                            sampling_seed=derive_seed(seed, f"sample:{neon_name}"),
                         )
                     )
                 if random_model is not None:
@@ -857,6 +884,7 @@ def run_seed(
                             reference_canonical_smiles=reference_canonical_smiles,
                             reference_scaffold_counts=reference_scaffold_counts,
                             run_config=run_config,
+                            sampling_seed=derive_seed(seed, f"sample:{random_neon_name}"),
                         )
                     )
 

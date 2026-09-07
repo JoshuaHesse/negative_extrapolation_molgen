@@ -7,6 +7,7 @@ mlruns/
 wandb/
 checkpoints/
 paper/
+paper.zip
 
 # Publish only the notebooks required to reproduce manuscript figures.
 notebooks/*

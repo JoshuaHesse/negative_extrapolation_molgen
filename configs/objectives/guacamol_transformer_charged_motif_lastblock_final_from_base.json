@@ -59,7 +59,7 @@
     ]
   },
   "mlflow": {
-    "enabled": true,
+    "enabled": false,
     "tracking_uri": "",
     "experiment": "neon_molecular_generation"
   },

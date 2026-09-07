@@ -83,8 +83,10 @@ placement commands are listed in
 [`docs/data_manifest.md`](docs/data_manifest.md). Run those commands before
 building the corresponding images.
 
-MLflow logging is optional. Set `MLFLOW_TRACKING_URI` to use a tracking server,
-or set `NEON_DISABLE_MLFLOW=1` to disable logging.
+MLflow logging is disabled by default. Opt in by setting `MLFLOW_TRACKING_URI`
+to a tracking server, or set `NEON_ENABLE_MLFLOW=1` to use MLflow's default
+local backend. `MLFLOW_EXPERIMENT_NAME` optionally overrides the experiment
+name.
 
 ## Reproducing the Experiments
 
@@ -132,6 +134,14 @@ make semlaflow-four-liability-positive-corrected-replicates
 make semlaflow-four-liability-joint-replicates-posebusters
 make semlaflow-four-liability-structural-analysis
 ```
+
+The first target regenerates the 50,000-molecule baseline pool independently
+for each confirmatory seed under
+`results/external/semlaflow/geom_drugs_50000_seed_<seed>/`. These large,
+reconstructible baseline pools are not included in the Zenodo archive. The
+archive instead retains the exact selected training/validation molecules,
+sampled confirmatory outputs, configurations, and analysis inputs used for the
+publication.
 
 Transient extrapolated checkpoints are deleted after scoring. The retained
 selection files, configurations, training histories, and norm metadata permit
