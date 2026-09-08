@@ -480,7 +480,7 @@ def write_primary_liability_table(statistics: pd.DataFrame, path: Path) -> None:
         r"\small",
         r"\caption{Primary paired comparison of NE with positive fine-tuning. Effects are NE minus positive fine-tuning in percentage points with 95\% confidence intervals. Negative target-hit effects and positive usable-yield effects favor NE. Exact two-sided sign-flip p-values are Holm-adjusted within each generator and endpoint across all twelve prespecified comparisons.}",
         r"\label{tab:confirmatory-liability-primary}",
-        r"\begin{tabular}{llcc}",
+        r"\begin{tabularx}{\textwidth}{ll>{\centering\arraybackslash}X>{\centering\arraybackslash}X}",
         r"\toprule",
         r"Generator & Objective & Target-hit difference; $p_{\mathrm{Holm}}$ & Usable-yield difference; $p_{\mathrm{Holm}}$ \\",
         r"\midrule",
@@ -501,7 +501,7 @@ def write_primary_liability_table(statistics: pd.DataFrame, path: Path) -> None:
                 f"{effect_text(usable)}; {format_p(usable.holm_exact_p)} \\\\"
             )
         lines.append(r"\addlinespace")
-    lines.extend([r"\bottomrule", r"\end{tabular}", r"\end{table*}"])
+    lines.extend([r"\bottomrule", r"\end{tabularx}", r"\end{table*}"])
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
@@ -513,7 +513,7 @@ def write_qed_table(statistics: pd.DataFrame, path: Path) -> None:
         r"\small",
         r"\caption{Paired QED-control comparisons. Effects are NE minus comparator with 95\% confidence intervals. QED $\geq 0.9$ effects are percentage points; mean-QED effects are in QED units. Exact two-sided sign-flip p-values are Holm-adjusted separately by architecture and endpoint.}",
         r"\label{tab:confirmatory-qed}",
-        r"\begin{tabular}{llcc}",
+        r"\begin{tabularx}{\textwidth}{ll>{\centering\arraybackslash}X>{\centering\arraybackslash}X}",
         r"\toprule",
         r"Architecture & Comparator & QED $\geq 0.9$ difference; $p_{\mathrm{Holm}}$ & Mean-QED difference; $p_{\mathrm{Holm}}$ \\",
         r"\midrule",
@@ -533,7 +533,7 @@ def write_qed_table(statistics: pd.DataFrame, path: Path) -> None:
                 f"{format_p(mean.holm_exact_p)} \\\\"
             )
         lines.append(r"\addlinespace")
-    lines.extend([r"\bottomrule", r"\end{tabular}", r"\end{table}"])
+    lines.extend([r"\bottomrule", r"\end{tabularx}", r"\end{table}"])
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
@@ -545,7 +545,7 @@ def write_semlaflow_table(statistics: pd.DataFrame, path: Path) -> None:
         r"\small",
         r"\caption{Primary paired SemlaFlow comparisons for positive-corrected NE at $\lambda=2.5$. Effects are positive-corrected NE minus comparator in percentage points with 95\% confidence intervals. Negative liability-hit and positive 3D-usable-yield effects favor positive-corrected NE. Exact two-sided sign-flip p-values are Holm-adjusted separately for each endpoint.}",
         r"\label{tab:confirmatory-semlaflow}",
-        r"\begin{tabular}{lcc}",
+        r"\begin{tabularx}{\textwidth}{l>{\centering\arraybackslash}X>{\centering\arraybackslash}X}",
         r"\toprule",
         r"Comparator & Liability-hit difference; $p_{\mathrm{Holm}}$ & 3D usable-yield difference; $p_{\mathrm{Holm}}$ \\",
         r"\midrule",
@@ -559,7 +559,7 @@ def write_semlaflow_table(statistics: pd.DataFrame, path: Path) -> None:
             f"{format_p(target.holm_exact_p)} & {effect_text(usable)}; "
             f"{format_p(usable.holm_exact_p)} \\\\"
         )
-    lines.extend([r"\bottomrule", r"\end{tabular}", r"\end{table}"])
+    lines.extend([r"\bottomrule", r"\end{tabularx}", r"\end{table}"])
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 

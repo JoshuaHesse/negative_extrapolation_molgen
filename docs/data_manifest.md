@@ -4,7 +4,7 @@ Large or externally licensed files are deliberately excluded from Git.
 
 ## Project-Owned Study Archive
 
-The Zenodo deposit should preserve repository-relative paths and include:
+The Zenodo deposit preserves repository-relative paths and includes:
 
 - GuacaMol acquisition metadata or the training file when redistribution is
   appropriate;
@@ -96,11 +96,9 @@ does include the exact selected `.smol` training and validation files used for
 the reported SemlaFlow model edits.
 
 These revisions and files were verified on 2026-08-27. The project-owned data
-archive has the reserved DOI
-[`10.5281/zenodo.21991931`](https://doi.org/10.5281/zenodo.21991931). The record
-remains a Zenodo draft until publication. Until it is published, an independent
-user can test the code but cannot retrieve the exact archived sample-level
-analyses from GitHub alone.
+archive is published at
+[`10.5281/zenodo.21991931`](https://doi.org/10.5281/zenodo.21991931). Independent
+users can retrieve the archived sample-level analyses from this record.
 
 Build the project-owned upload bundle with:
 

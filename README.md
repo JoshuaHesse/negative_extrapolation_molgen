@@ -1,4 +1,4 @@
-# Negative Extrapolation for Molecular Generators
+# Negative Extrapolation for Targeted Liability Erasure in Molecular Generators
 
 This repository contains the implementation and reproducibility workflows for a
 study of **negative extrapolation (NE)** as a parameter-space edit for molecular
@@ -177,9 +177,8 @@ artifacts are defined in
 The project-owned Zenodo data bundle can be assembled with
 `make zenodo-archive`; see [`docs/data_manifest.md`](docs/data_manifest.md) for
 its inclusion and exclusion policy.
-The dataset DOI is
-[`10.5281/zenodo.21991931`](https://doi.org/10.5281/zenodo.21991931); the record
-will resolve publicly after the current Zenodo draft is published.
+The supporting dataset is published at
+[`10.5281/zenodo.21991931`](https://doi.org/10.5281/zenodo.21991931).
 
 ## Controls and Statistics
 
