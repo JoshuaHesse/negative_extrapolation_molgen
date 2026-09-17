@@ -16,20 +16,22 @@ MODEL_DIRS = {
     "base": "base",
     "positive_tuned": "positive_tuned",
     "full_model_neon_lambda_2p5": "standard_ne_2p5",
-    "full_model_positive_corrected_neon_lambda_2p5": "positive_corrected_ne_2p5",
+    "full_model_positive_corrected_neon_lambda_2p5": (
+        "positive_corrected_ne_2p5"
+    ),
 }
 MODEL_ORDER = list(MODEL_DIRS)
 MODEL_LABELS = {
     "base": "Base",
     "positive_tuned": "Positive FT",
     "full_model_neon_lambda_2p5": "Standard NE",
-    "full_model_positive_corrected_neon_lambda_2p5": "Positive-corrected NE",
+    "full_model_positive_corrected_neon_lambda_2p5": "CNE",
 }
 MODEL_COLORS = {
     "base": "#7A8089",
     "positive_tuned": "#EE9B00",
     "full_model_neon_lambda_2p5": "#1A759F",
-    "full_model_positive_corrected_neon_lambda_2p5": "#2D6A4F",
+    "full_model_positive_corrected_neon_lambda_2p5": "#52B69A",
 }
 FOCAL = "full_model_positive_corrected_neon_lambda_2p5"
 FIXED_SCAFFOLD_TARGET = 2500

@@ -17,10 +17,6 @@ DEFAULT_MODELS = [
     "full_model_random_neon_lambda_2p5",
     "full_model_norm_matched_random_corrected_neon_lambda_2p5",
     "full_model_positive_corrected_neon_lambda_2p5",
-    "full_model_neon_lambda_4",
-    "full_model_random_neon_lambda_4",
-    "full_model_norm_matched_random_corrected_neon_lambda_4",
-    "full_model_positive_corrected_neon_lambda_4",
 ]
 
 

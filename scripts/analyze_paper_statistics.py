@@ -99,8 +99,8 @@ SEMLAFLOW_MODELS = {
     "random_ne": "full_model_random_neon_lambda_2p5",
     "positive": "positive_tuned",
     "standard_ne": "full_model_neon_lambda_2p5",
-    "random_corrected_ne": "full_model_norm_matched_random_corrected_neon_lambda_2p5",
-    "positive_corrected_ne": "full_model_positive_corrected_neon_lambda_2p5",
+    "random_corrected_control": "full_model_norm_matched_random_corrected_neon_lambda_2p5",
+    "cne": "full_model_positive_corrected_neon_lambda_2p5",
 }
 
 SEMLAFLOW_COMPARATORS = {
@@ -108,7 +108,7 @@ SEMLAFLOW_COMPARATORS = {
     "random_ne": "Random NE",
     "positive": "Positive FT",
     "standard_ne": "Standard NE",
-    "random_corrected_ne": "Random-corrected NE",
+    "random_corrected_control": "Norm-matched random correction",
 }
 
 OBJECTIVE_ORDER = ["Reactive", "Metal-binding motif", "Charged motif", "Assay interference"]
@@ -543,7 +543,7 @@ def write_semlaflow_table(statistics: pd.DataFrame, path: Path) -> None:
         r"\begin{table}[ht]",
         r"\centering",
         r"\small",
-        r"\caption{Primary paired SemlaFlow comparisons for positive-corrected NE at $\lambda=2.5$. Effects are positive-corrected NE minus comparator in percentage points with 95\% confidence intervals. Negative liability-hit and positive 3D-usable-yield effects favor positive-corrected NE. Exact two-sided sign-flip p-values are Holm-adjusted separately for each endpoint.}",
+        r"\caption{Primary paired SemlaFlow comparisons for corrected negative extrapolation (CNE) at $\lambda=2.5$. Effects are CNE minus comparator in percentage points with 95\% confidence intervals. Negative liability-hit and positive 3D-usable-yield effects favor CNE. Exact two-sided sign-flip p-values are Holm-adjusted separately for each endpoint.}",
         r"\label{tab:confirmatory-semlaflow}",
         r"\begin{tabularx}{\textwidth}{l>{\centering\arraybackslash}X>{\centering\arraybackslash}X}",
         r"\toprule",
@@ -600,7 +600,7 @@ def write_report(statistics: pd.DataFrame, path: Path) -> None:
     lines.extend(
         [
             "",
-            "## SemlaFlow positive-corrected NE",
+            "## SemlaFlow corrected negative extrapolation",
             "",
             "Effects are percentage-point differences relative to each comparator.",
             "",
@@ -646,7 +646,7 @@ def main() -> None:
     qed_stats = paired_summary(qed_values, focal="ne", comparators=COMPARATORS)
     semlaflow_stats = paired_summary(
         semlaflow_values,
-        focal="positive_corrected_ne",
+        focal="cne",
         comparators=SEMLAFLOW_COMPARATORS,
     )
     statistics = pd.concat(

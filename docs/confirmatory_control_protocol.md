@@ -17,21 +17,37 @@ theta_random_ne = theta_base - lambda * scale_random * delta_random
 
 The norm is calculated once over all floating-point tensors in scope. It is not matched independently per tensor. This preserves the learned random-data direction while controlling total parameter displacement.
 
-## SemlaFlow corrected control
+## SemlaFlow corrected negative extrapolation
 
-SemlaFlow additionally compares positive-corrected NE against a trained-random corrected control:
+SemlaFlow CNE uses a liability-free task vector as a validity-correction
+direction. Let `delta_free = theta_free - theta_base`, where `theta_free` is
+fine-tuned on valid molecules that contain none of the targeted motifs:
 
 ```text
-v_positive = delta_bad - delta_positive
-v_random = delta_bad - delta_random
-scale_corrected_random = ||v_positive||_2 / ||v_random||_2
+v_cne = delta_bad - delta_free
+theta_cne = theta_base - lambda * v_cne
 ```
 
-The random-corrected checkpoint applies `scale_corrected_random * v_random`, so both corrected directions have the same global full-model L2 norm at a given lambda. Pure random NE is separately matched to standard NE using the first definition above.
+The liability-free direction is intended to remove shared changes associated
+with continued training on valid chemistry from the bad-set direction. It is
+used as a correction, not as a separate enrichment objective. CNE and standard
+NE use the reported lambda without an additional norm scale.
+
+The random-corrected mechanistic control uses
+
+```text
+v_random_control = delta_bad - delta_random
+scale_control = ||v_cne||_2 / ||v_random_control||_2
+theta_random_control = theta_base - lambda * scale_control * v_random_control
+```
+
+This matches the random-corrected direction to CNE's global full-model L2 norm
+within each replicate seed. Pure random NE is separately matched to standard NE
+using the first definition above; no scale factor is shared across replicates.
 
 ## Persistent audit metadata
 
-GuacaMol runs write `random_neon_norm_matching*.json`. REINVENT writes the trained-random definition and norm factors to `neon_scope_summary.json` and a completion marker. SemlaFlow writes all raw norms, reference norms, and scale factors to `models/neon_scope_summary.json`; this file is retained even when transient model checkpoints are deleted.
+GuacaMol runs write `random_neon_norm_matching*.json`. REINVENT writes the trained-random definition and norm factors to `neon_scope_summary.json` and a completion marker. SemlaFlow writes raw task-vector norms and the random-control-to-CNE scale factor to `models/neon_scope_summary.json`; this file is retained even when transient model checkpoints are deleted. Legacy SemlaFlow artifact paths use `positive_corrected` for CNE and `norm_matched_random_corrected` for its control; these identifiers are retained solely for compatibility with the released result archive.
 
 For GuacaMol seeds whose original bad checkpoint was removed during storage cleanup, the bad model is deterministically reconstructed from the saved selection and original optimization settings. Standard NE and random NE are both resampled from that same reconstructed direction, avoiding a comparison between an old NE direction and a newly reconstructed control direction. Reconstructed tuned checkpoints and transient extrapolated checkpoints may be deleted after scoring; the retained inputs and metadata permit reconstruction. REINVENT likewise deletes transient random-NE and transfer-learning checkpoints after their outputs and audit metadata have been written.
 

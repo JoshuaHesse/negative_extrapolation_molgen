@@ -130,7 +130,7 @@ After installing SemlaFlow and its published GEOM-Drugs checkpoint/data:
 
 ```bash
 make semlaflow-geom-drugs-50000-baseline-replicates
-make semlaflow-four-liability-positive-corrected-replicates
+make semlaflow-four-liability-cne-replicates
 make semlaflow-four-liability-joint-replicates-posebusters
 make semlaflow-four-liability-structural-analysis
 ```
@@ -185,8 +185,10 @@ The supporting dataset is published at
 Random NE controls are learned by fine-tuning on size-matched random samples;
 they are not synthetic Gaussian directions. Their update is globally L2
 norm-matched to the corresponding bad-set update within the exact parameter
-scope. SemlaFlow additionally includes random-corrected and liability-free
-positive-corrected directions. Exact definitions and audit metadata are in
+scope. SemlaFlow CNE subtracts a direction learned from liability-free valid
+molecules from the bad-set direction before extrapolation. A random-corrected
+control is globally norm-matched to CNE independently within each seed. Exact
+definitions and audit metadata are in
 [`docs/confirmatory_control_protocol.md`](docs/confirmatory_control_protocol.md).
 
 The independently trained seed is the experimental unit. Confirmatory

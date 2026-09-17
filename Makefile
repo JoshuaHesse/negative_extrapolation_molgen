@@ -13,9 +13,9 @@ SEMLAFLOW_POSEBUSTERS_CPUS ?= 64
 SEMLAFLOW_POSEBUSTERS_CPUSET ?= 0-63
 SEMLAFLOW_FOUR_LIABILITY_ROOT ?= results/external/semlaflow/four_liability_joint_replicates
 SEMLAFLOW_FOUR_LIABILITY_ANALYSIS_SAMPLES ?= $(SEMLAFLOW_FOUR_LIABILITY_ROOT)/analysis/smiles_samples_confirmatory
-SEMLAFLOW_FOUR_LIABILITY_MODELS ?= base random_tuned positive_tuned bad_tuned full_model_neon_lambda_2p5 full_model_random_neon_lambda_2p5 full_model_norm_matched_random_corrected_neon_lambda_2p5 full_model_positive_corrected_neon_lambda_2p5 full_model_neon_lambda_4 full_model_random_neon_lambda_4 full_model_norm_matched_random_corrected_neon_lambda_4 full_model_positive_corrected_neon_lambda_4
+SEMLAFLOW_FOUR_LIABILITY_MODELS ?= base random_tuned positive_tuned bad_tuned full_model_neon_lambda_2p5 full_model_random_neon_lambda_2p5 full_model_norm_matched_random_corrected_neon_lambda_2p5 full_model_positive_corrected_neon_lambda_2p5
 
-.PHONY: build test gpu-shell guacamol-download guacamol-epoch-sensitivity-scaffolds guacamol-profile guacamol-rnn-assay-interference-removal-from-base guacamol-rnn-charged-motif-removal-from-base guacamol-rnn-chelator-removal-from-base guacamol-rnn-qed-from-base guacamol-rnn-reactive-epoch-sensitivity guacamol-rnn-reactive-removal-from-base guacamol-rnn-specific-liability-objectives guacamol-train-rnn-base guacamol-train-transformer-base guacamol-transformer-assay-interference-lastblock-final-from-base guacamol-transformer-charged-motif-lastblock-final-from-base guacamol-transformer-chelator-lastblock-final-from-base guacamol-transformer-lastblock-specific-liability-objectives guacamol-transformer-qed-from-base guacamol-transformer-reactive-epoch-sensitivity guacamol-transformer-reactive-lastblock-final-from-base paper-control-refresh paper-fcd-distances paper-fcd-mw-calibration paper-fcd-mw-calibration-guacamol-rnn paper-fcd-mw-calibration-guacamol-transformer paper-fcd-mw-calibration-reinvent paper-guacamol-base-replicates paper-guacamol-chelator-diversity paper-guacamol-liability-replicates paper-guacamol-qed-replicates paper-guacamol-random-controls paper-guacamol-rnn-chelator-fcd paper-guacamol-rnn-chelator-reference paper-guacamol-transformer-chelator-fcd paper-post-control-analysis paper-refresh-fdd paper-refresh-guacamol-rnn-fdd paper-refresh-guacamol-transformer-fdd paper-refresh-reinvent-fdd paper-reinvent-chelator-fcd paper-reinvent-liability-replicates paper-reproduction paper-semlaflow-confirmatory paper-si-tables paper-statistics paper-transformer-scope-development-data publication-si-tables reinvent-assay-interference-replicates reinvent-assay-interference-replicates-analyze reinvent-assay-interference-replicates-resume reinvent-build reinvent-charged-motif-replicates reinvent-charged-motif-replicates-analyze reinvent-charged-motif-replicates-resume reinvent-chelator-replicates reinvent-chelator-replicates-analyze reinvent-chelator-replicates-resume reinvent-reactive-epoch-sensitivity reinvent-reactive-replicates reinvent-reactive-replicates-analyze reinvent-reactive-replicates-resume reinvent-shell reinvent-specific-liability-replicates semlaflow-build semlaflow-env-check semlaflow-four-liability-analysis-export semlaflow-four-liability-distribution-distance semlaflow-four-liability-diversity semlaflow-four-liability-joint-replicates semlaflow-four-liability-joint-replicates-posebusters semlaflow-four-liability-joint-replicates-summarize semlaflow-four-liability-paper-analysis semlaflow-four-liability-positive-corrected-replicates semlaflow-four-liability-structural-analysis semlaflow-four-liability-usable-scaffolds semlaflow-geom-drugs-50000-baseline-replicates shell
+.PHONY: build test gpu-shell guacamol-download guacamol-epoch-sensitivity-scaffolds guacamol-profile guacamol-rnn-assay-interference-removal-from-base guacamol-rnn-charged-motif-removal-from-base guacamol-rnn-chelator-removal-from-base guacamol-rnn-qed-from-base guacamol-rnn-reactive-epoch-sensitivity guacamol-rnn-reactive-removal-from-base guacamol-rnn-specific-liability-objectives guacamol-train-rnn-base guacamol-train-transformer-base guacamol-transformer-assay-interference-lastblock-final-from-base guacamol-transformer-charged-motif-lastblock-final-from-base guacamol-transformer-chelator-lastblock-final-from-base guacamol-transformer-lastblock-specific-liability-objectives guacamol-transformer-qed-from-base guacamol-transformer-reactive-epoch-sensitivity guacamol-transformer-reactive-lastblock-final-from-base paper-control-refresh paper-fcd-distances paper-fcd-mw-calibration paper-fcd-mw-calibration-guacamol-rnn paper-fcd-mw-calibration-guacamol-transformer paper-fcd-mw-calibration-reinvent paper-guacamol-base-replicates paper-guacamol-chelator-diversity paper-guacamol-liability-replicates paper-guacamol-qed-replicates paper-guacamol-random-controls paper-guacamol-rnn-chelator-fcd paper-guacamol-rnn-chelator-reference paper-guacamol-transformer-chelator-fcd paper-post-control-analysis paper-refresh-fdd paper-refresh-guacamol-rnn-fdd paper-refresh-guacamol-transformer-fdd paper-refresh-reinvent-fdd paper-reinvent-chelator-fcd paper-reinvent-liability-replicates paper-reproduction paper-semlaflow-confirmatory paper-si-tables paper-statistics paper-transformer-scope-development-data publication-si-tables reinvent-assay-interference-replicates reinvent-assay-interference-replicates-analyze reinvent-assay-interference-replicates-resume reinvent-build reinvent-charged-motif-replicates reinvent-charged-motif-replicates-analyze reinvent-charged-motif-replicates-resume reinvent-chelator-replicates reinvent-chelator-replicates-analyze reinvent-chelator-replicates-resume reinvent-reactive-epoch-sensitivity reinvent-reactive-replicates reinvent-reactive-replicates-analyze reinvent-reactive-replicates-resume reinvent-shell reinvent-specific-liability-replicates semlaflow-build semlaflow-env-check semlaflow-four-liability-analysis-export semlaflow-four-liability-cne-replicates semlaflow-four-liability-distribution-distance semlaflow-four-liability-diversity semlaflow-four-liability-joint-replicates semlaflow-four-liability-joint-replicates-posebusters semlaflow-four-liability-joint-replicates-summarize semlaflow-four-liability-paper-analysis semlaflow-four-liability-structural-analysis semlaflow-four-liability-usable-scaffolds semlaflow-geom-drugs-50000-baseline-replicates shell
 
 build:
 	docker compose build neon-molgen
@@ -179,7 +179,7 @@ semlaflow-four-liability-joint-replicates:
 			"$${joint_dir}/models/bad_tuned.ckpt"; \
 	done
 
-semlaflow-four-liability-positive-corrected-replicates: semlaflow-four-liability-joint-replicates
+semlaflow-four-liability-cne-replicates: semlaflow-four-liability-joint-replicates
 	@set -e; for seed in $(PAPER_SEEDS); do \
 		baseline_dir=results/external/semlaflow/geom_drugs_50000_seed_$${seed}; \
 		seed_root=results/external/semlaflow/four_liability_joint_replicates/seed_$${seed}; \
@@ -191,7 +191,7 @@ semlaflow-four-liability-positive-corrected-replicates: semlaflow-four-liability
 		pure_random_done=$${joint_dir}/samples/full_model_random_neon_lambda_4/summary.json; \
 		random_control_done=$${joint_dir}/samples/full_model_norm_matched_random_corrected_neon_lambda_4/summary.json; \
 		if [ -f "$${positive_done}" ] && [ -f "$${pure_random_done}" ] && [ -f "$${random_control_done}" ]; then \
-			echo "Skipping completed positive-corrected NE seed $${seed}"; \
+			echo "Skipping completed CNE seed $${seed}"; \
 			continue; \
 		fi; \
 		if [ ! -f "$${baseline_dir}/summary.csv" ]; then \
@@ -223,7 +223,7 @@ semlaflow-four-liability-positive-corrected-replicates: semlaflow-four-liability
 			--resume \
 			--skip-posebusters \
 			--device cuda; \
-		echo "[$${seed}] reconstructing liability-free positive checkpoint"; \
+		echo "[$${seed}] reconstructing liability-free correction checkpoint"; \
 		docker compose -f docker-compose.yml -f docker-compose.gpu.yml run --rm semlaflow \
 			python scripts/run_semlaflow_neon.py \
 			--ckpt-path $(SEMLAFLOW_CKPT) \
@@ -246,7 +246,7 @@ semlaflow-four-liability-positive-corrected-replicates: semlaflow-four-liability
 			--resume \
 			--skip-posebusters \
 			--device cuda; \
-		echo "[$${seed}] positive-corrected four-liability NE"; \
+		echo "[$${seed}] liability-free-corrected NE (CNE)"; \
 		docker compose -f docker-compose.yml -f docker-compose.gpu.yml run --rm semlaflow \
 			python scripts/run_semlaflow_neon.py \
 			--ckpt-path $(SEMLAFLOW_CKPT) \
@@ -283,7 +283,7 @@ semlaflow-four-liability-positive-corrected-replicates: semlaflow-four-liability
 			"$${joint_dir}/models/bad_tuned.ckpt"; \
 	done
 
-semlaflow-four-liability-joint-replicates-posebusters:
+semlaflow-four-liability-joint-replicates-posebusters: semlaflow-four-liability-cne-replicates
 	@set -e; for seed in $(PAPER_SEEDS); do \
 		seed_root=results/external/semlaflow/four_liability_joint_replicates/seed_$${seed}; \
 		echo "[$${seed}] PoseBusters"; \
@@ -297,11 +297,7 @@ semlaflow-four-liability-joint-replicates-posebusters:
 			--model standard_ne_2p5=$${seed_root}/joint/samples/full_model_neon_lambda_2p5 \
 			--model random_ne_2p5=$${seed_root}/joint/samples/full_model_random_neon_lambda_2p5 \
 			--model norm_matched_random_corrected_ne_2p5=$${seed_root}/joint/samples/full_model_norm_matched_random_corrected_neon_lambda_2p5 \
-			--model standard_ne_4=$${seed_root}/joint/samples/full_model_neon_lambda_4 \
-			--model random_ne_4=$${seed_root}/joint/samples/full_model_random_neon_lambda_4 \
-			--model norm_matched_random_corrected_ne_4=$${seed_root}/joint/samples/full_model_norm_matched_random_corrected_neon_lambda_4 \
 			--model positive_corrected_ne_2p5=$${seed_root}/joint/samples/full_model_positive_corrected_neon_lambda_2p5 \
-			--model positive_corrected_ne_4=$${seed_root}/joint/samples/full_model_positive_corrected_neon_lambda_4 \
 			--output-dir $${seed_root}/joint/analysis/posebusters \
 			--objective-column four_liability_hit \
 			--workers $(SEMLAFLOW_POSEBUSTERS_WORKERS) \
@@ -578,7 +574,7 @@ paper-reinvent-liability-replicates:
 	$(MAKE) reinvent-charged-motif-replicates-resume
 	$(MAKE) reinvent-assay-interference-replicates-resume
 
-paper-semlaflow-confirmatory: semlaflow-geom-drugs-50000-baseline-replicates semlaflow-four-liability-positive-corrected-replicates semlaflow-four-liability-joint-replicates-posebusters semlaflow-four-liability-joint-replicates-summarize
+paper-semlaflow-confirmatory: semlaflow-geom-drugs-50000-baseline-replicates semlaflow-four-liability-cne-replicates semlaflow-four-liability-joint-replicates-posebusters semlaflow-four-liability-joint-replicates-summarize
 
 paper-control-refresh: paper-guacamol-base-replicates paper-guacamol-qed-replicates paper-guacamol-liability-replicates paper-guacamol-random-controls paper-reinvent-liability-replicates paper-semlaflow-confirmatory
 

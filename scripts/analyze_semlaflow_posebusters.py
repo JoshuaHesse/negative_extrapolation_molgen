@@ -56,9 +56,20 @@ def analyze_model(
     model_output = output_dir / name
     model_output.mkdir(parents=True, exist_ok=True)
     summary_path = model_output / "summary.json"
-    if args.resume and summary_path.is_file():
+    source_paths = [
+        sample_dir / "rdkit_profile.csv",
+        sample_dir / "scores.csv",
+        *sorted(sample_dir.glob("*.sdf")),
+    ]
+    source_is_newer = any(
+        path.is_file() and path.stat().st_mtime > summary_path.stat().st_mtime
+        for path in source_paths
+    ) if summary_path.is_file() else False
+    if args.resume and summary_path.is_file() and not source_is_newer:
         print(f"Resume: reusing {summary_path}")
         return json.loads(summary_path.read_text())
+    if args.resume and summary_path.is_file():
+        print(f"Resume: source samples changed; recomputing {name}")
 
     sdf_paths = sorted(sample_dir.glob("*.sdf"))
     if len(sdf_paths) != 1:

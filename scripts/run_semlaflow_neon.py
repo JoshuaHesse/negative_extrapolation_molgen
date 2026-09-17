@@ -672,6 +672,36 @@ def prepare_training_data(args: argparse.Namespace, output_dir: Path) -> tuple[P
     return data_dir, selection_metadata
 
 
+def load_prepared_training_data(
+    args: argparse.Namespace,
+    output_dir: Path,
+) -> tuple[Path, dict] | None:
+    """Reuse the exact retained SemlaFlow selection when resuming training."""
+    selection_dir = output_dir / "selection"
+    data_dir = selection_dir / f"{args.selection_mode}_smol"
+    train_path = data_dir / "train.smol"
+    val_path = data_dir / "val.smol"
+    if not train_path.is_file() or not val_path.is_file():
+        return None
+
+    metadata_path = selection_dir / "selection_summary.json"
+    metadata = json.loads(metadata_path.read_text()) if metadata_path.is_file() else {}
+    recorded_mode = metadata.get("selection_mode")
+    recorded_objective = metadata.get("objective_column")
+    if recorded_mode not in (None, args.selection_mode):
+        raise ValueError(
+            f"Retained selection mode {recorded_mode!r} does not match "
+            f"requested mode {args.selection_mode!r}."
+        )
+    if recorded_objective not in (None, args.objective_column):
+        raise ValueError(
+            f"Retained objective {recorded_objective!r} does not match "
+            f"requested objective {args.objective_column!r}."
+        )
+    print(f"Resume: reusing prepared training data {data_dir}")
+    return data_dir, metadata
+
+
 def build_training_dm(args: argparse.Namespace, data_dir: Path, vocab):
     if args.dataset == "geom-drugs":
         coord_std = semla_util.GEOM_COORDS_STD_DEV
@@ -1178,7 +1208,11 @@ def main() -> None:
         bad_ckpt_path = resumable_trained_checkpoint
         print(f"Resume: reusing trained checkpoint {bad_ckpt_path}")
     else:
-        data_dir, selection_metadata = prepare_training_data(args, output_dir)
+        prepared = load_prepared_training_data(args, output_dir) if args.resume else None
+        if prepared is None:
+            data_dir, selection_metadata = prepare_training_data(args, output_dir)
+        else:
+            data_dir, selection_metadata = prepared
         print(json.dumps(selection_metadata, indent=2, sort_keys=True))
         if args.prepare_only:
             return

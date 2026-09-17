@@ -10,7 +10,7 @@ loading these outputs, arranging panels, and applying visual styling.
 | GuacaMol liability erasure | `paper-guacamol-liability-replicates` | `paper-post-control-analysis`, `paper-statistics` |
 | Transformer scope development | `paper-transformer-scope-development-data` | `analyze_transformer_scope_ablation.py` |
 | REINVENT4 liability erasure | `paper-reinvent-liability-replicates` | per-objective analysis targets, `paper-statistics` |
-| SemlaFlow joint liability erasure | `semlaflow-four-liability-positive-corrected-replicates` | PoseBusters, diversity, FCD/FDD, usable-scaffold targets |
+| SemlaFlow joint liability erasure | `semlaflow-four-liability-cne-replicates` | PoseBusters, diversity, FCD/FDD, usable-scaffold targets |
 | FCD calibration | existing base generations | `paper-fcd-mw-calibration` |
 | Epoch sensitivity | architecture-specific development targets | `analyze_epoch_sensitivity_scaffolds.py` |
 
