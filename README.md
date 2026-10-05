@@ -101,6 +101,31 @@ are excluded from confirmatory statistics.
 
 ### GuacaMol RNN and Transformer
 
+#### Repairing Legacy Assay-Interference Results
+
+For the audited legacy result tree only, the following one-time cleanup removes
+assay-interference results affected by the old nitro SMARTS. It preserves raw
+base pools, verified Transformer evaluations, and seed 47. It does not change
+other objectives or the separate 10k REINVENT base evaluation.
+
+```bash
+make paper-assay-nitro-plan   # inspect the deletion summary without changing files
+make paper-assay-nitro-clean  # delete stale results; record paths and hashes
+make paper-assay-nitro-repair # regenerate affected arms, audit, rebuild statistics
+```
+
+This is not required for fresh runs with the current scoring code. The repair
+uses the original training settings, lambdas, and sampling seeds. Completed seeds
+are checksum-verified and skipped on restart; an interrupted seed restarts from
+its preserved inputs. Input/configuration changes cause an error rather than
+silently mixing incompatible results. Disposable edited checkpoints are not
+retained. Cleanup manifests are in `results/cleanup_manifests/assay_nitro_v2`.
+Stale development-seed-11 outputs are removed but are not regenerated. Figures
+remain notebook-generated; rerun the figure notebooks after the repair finishes.
+Existing manuscript PDFs and release archives are not replaced by these commands.
+
+#### Standard Runs
+
 ```bash
 make guacamol-download
 make guacamol-train-rnn-base
@@ -123,6 +148,27 @@ After installing REINVENT4 and its published prior:
 ```bash
 make paper-reinvent-liability-replicates
 ```
+
+For a budget-matched reevaluation of the unedited REINVENT prior, run:
+
+```bash
+make paper-reinvent-base-budget
+```
+
+This samples 10,000 attempts per confirmatory seed using the existing prior
+and the same sampling settings and seed offset as the edited models. A single
+base evaluation per seed is scored for all four objectives. It also computes
+base scaffold/diversity metrics, with the usual `ANALYSIS_CPUS` and
+`ANALYSIS_CPUSET` limits. Sampling resumes from completed, checksum-verified
+outputs. Results are written separately to
+`results/external/reinvent4/base_evaluation_10000`; the original 50,000-sample
+training pools, selected fine-tuning sets, and edited-model results are not
+modified. The paper notebooks and statistics loader require this completed
+evaluation and replace only the historical Base rows when reading the results.
+They do not silently fall back to the 50,000-sample evaluation. The target does
+not overwrite existing figures or statistics. Fresh sampling is necessary because the old native REINVENT
+CSVs omit invalid and duplicate attempts, so selecting 10,000 saved rows is
+not equivalent to requesting 10,000 generations.
 
 ### SemlaFlow
 
@@ -153,12 +199,22 @@ With the released result archive restored under `results/`:
 
 ```bash
 make paper-post-control-analysis
+make paper-reinvent-base-budget
 make paper-fcd-distances
+make paper-fcd-mw-calibration-size-check
 make paper-statistics
 make publication-si-tables
 make audit-results
 make figures
 ```
+
+The SI molecular-weight calibration uses equal query/reference counts across
+all MW bands within each generator/seed. The sample-size analysis
+also retains the original and pair-matched calculations. All are drawn from
+the saved base pools, and query/reference overlap is allowed; they illustrate
+chemical-space restrictions rather than universal FCD/FDD thresholds.
+`paper-fcd-mw-calibration-size-check` uses CPU by default and writes
+`results/analysis/fcd_calibration_size_check/comparison_metrics.csv`.
 
 Generated statistical tables are written to
 `results/publication/tables/`. The notebooks load the scripted CSV outputs and
@@ -177,8 +233,11 @@ artifacts are defined in
 The project-owned Zenodo data bundle can be assembled with
 `make zenodo-archive`; see [`docs/data_manifest.md`](docs/data_manifest.md) for
 its inclusion and exclusion policy.
+The target writes `negative_extrapolation_molgen_data_v1.zip` and its SHA-256
+checksum under `results/zenodo_release/`; every payload checksum is verified
+before the build reports success.
 The supporting dataset is published at
-[`10.5281/zenodo.21991931`](https://doi.org/10.5281/zenodo.21991931).
+[`10.5281/zenodo.23165725`](https://doi.org/10.5281/zenodo.23165725).
 
 ## Controls and Statistics
 

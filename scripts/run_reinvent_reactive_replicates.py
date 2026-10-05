@@ -10,6 +10,7 @@ import pandas as pd
 
 from neon_molgen.scoring import score_smiles, summarize_scores
 from scripts.reinvent_score_samples import read_smiles_table
+from scripts.repair_assay_nitro import refuse_pending_repair
 
 
 def _sample_frame(frame: pd.DataFrame, n: int, *, seed: int) -> pd.DataFrame:
@@ -474,6 +475,8 @@ def run_seed(args: argparse.Namespace, config: dict, seed: int) -> None:
     free_column = liability_column(config)
     primary_fraction = f"{free_column}_fraction"
     seed_dir = Path(args.output_dir) / f"seed_{seed}"
+    if not getattr(args, "assay_nitro_repair", False):
+        refuse_pending_repair(seed_dir)
     baseline_dir = seed_dir / "baseline"
     selection_dir = seed_dir / "selection"
     model_dir = seed_dir / "models"
@@ -541,6 +544,11 @@ def run_seed(args: argparse.Namespace, config: dict, seed: int) -> None:
         selection_summary.write_text(json.dumps(metadata, indent=2))
     else:
         refresh_selection_smiles(selection_dir, pd.read_csv(baseline_scored), seed=seed)
+
+    if getattr(args, "assay_nitro_repair", False):
+        from scripts.repair_assay_nitro import validate_selections
+
+        validate_selections(seed_dir, reinvent=True)
 
     bad_model = model_dir / "bad_tuned.model"
     positive_model = model_dir / "positive_tuned.model"

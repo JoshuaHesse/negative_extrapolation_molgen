@@ -7,11 +7,12 @@ loading these outputs, arranging panels, and applying visual styling.
 | Result family | Generation / editing | Analysis |
 |---|---|---|
 | GuacaMol QED controls | `paper-guacamol-qed-replicates` | objective summaries and notebook loaders |
-| GuacaMol liability erasure | `paper-guacamol-liability-replicates` | `paper-post-control-analysis`, `paper-statistics` |
+| RNN/Transformer motif suppression | `paper-guacamol-liability-replicates` | `paper-post-control-analysis`, `paper-statistics` |
 | Transformer scope development | `paper-transformer-scope-development-data` | `analyze_transformer_scope_ablation.py` |
-| REINVENT4 liability erasure | `paper-reinvent-liability-replicates` | per-objective analysis targets, `paper-statistics` |
-| SemlaFlow joint liability erasure | `semlaflow-four-liability-cne-replicates` | PoseBusters, diversity, FCD/FDD, usable-scaffold targets |
-| FCD calibration | existing base generations | `paper-fcd-mw-calibration` |
+| REINVENT-prior motif suppression | `paper-reinvent-liability-replicates` | per-objective analysis targets, `paper-statistics` |
+| REINVENT-prior independent base evaluation | `paper-reinvent-base-budget` | scored 10,000-attempt evaluations for all four objectives |
+| SemlaFlow joint motif suppression | `semlaflow-four-liability-cne-replicates` | PoseBusters, diversity, FCD/FDD, usable-scaffold targets |
+| FCD/FDD calibration | existing base generations | `paper-fcd-mw-calibration-size-check` |
 | Epoch sensitivity | architecture-specific development targets | `analyze_epoch_sensitivity_scaffolds.py` |
 
 ## Audit Rules

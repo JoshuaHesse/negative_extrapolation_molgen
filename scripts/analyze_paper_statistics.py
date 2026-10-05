@@ -19,6 +19,12 @@ import numpy as np
 import pandas as pd
 from scipy import stats
 
+from neon_molgen.paper_data import (
+    load_reference,
+    novelty_aware_usable_yield,
+    replace_reinvent_base,
+)
+
 PAPER_SEEDS = [13, 17, 19, 23, 29, 31, 37, 41, 43, 47]
 
 OBJECTIVES = {
@@ -113,6 +119,11 @@ SEMLAFLOW_COMPARATORS = {
 
 OBJECTIVE_ORDER = ["Reactive", "Metal-binding motif", "Charged motif", "Assay interference"]
 GENERATOR_ORDER = ["GuacaMol RNN", "GuacaMol Transformer", "REINVENT prior"]
+GENERATOR_LABELS = {
+    "GuacaMol RNN": "RNN",
+    "GuacaMol Transformer": "Transformer",
+    "REINVENT prior": "REINVENT prior",
+}
 
 
 def parse_args() -> argparse.Namespace:
@@ -151,32 +162,6 @@ def validate_seed_rows(frame: pd.DataFrame, *, context: str) -> pd.DataFrame:
     return selected
 
 
-def load_reference(path: Path) -> set[str]:
-    if not path.is_file():
-        raise FileNotFoundError(path)
-    with path.open() as handle:
-        return {line.strip() for line in handle if line.strip()}
-
-
-def novelty_aware_usable_yield(
-    sample_path: Path,
-    *,
-    liability_column: str,
-    reference: set[str],
-) -> float:
-    required = ["canonical_smiles", "valid", liability_column]
-    frame = pd.read_csv(sample_path, usecols=lambda column: column in required)
-    missing = set(required) - set(frame.columns)
-    if missing:
-        raise ValueError(f"{sample_path}: missing columns {sorted(missing)}")
-    valid = frame["valid"].fillna(False).astype(bool)
-    liability_free = pd.to_numeric(frame[liability_column], errors="coerce").eq(0)
-    canonical = frame["canonical_smiles"].fillna("").astype(str)
-    usable = canonical[valid & liability_free]
-    usable = usable[usable.ne("") & ~usable.isin(reference)]
-    return float(usable.nunique() / len(frame)) if len(frame) else math.nan
-
-
 def load_liability_endpoints(root: Path) -> pd.DataFrame:
     rows: list[dict[str, object]] = []
     references: dict[str, set[str]] = {}
@@ -191,6 +176,8 @@ def load_liability_endpoints(root: Path) -> pd.DataFrame:
                 / str(objective_config[str(generator_config["dir_key"])])
             )
             metrics = read_csv(result_dir / "objective_metrics.csv")
+            if generator == "REINVENT prior":
+                metrics = replace_reinvent_base(metrics, root, objective=objective, seeds=PAPER_SEEDS)
             liability_metric = str(objective_config["metric"])
             liability_column = liability_metric.removesuffix("_fraction")
             for method_key, model_name in generator_config["models"].items():
@@ -496,7 +483,7 @@ def write_primary_liability_table(statistics: pd.DataFrame, path: Path) -> None:
             ].iloc[0]
             usable = objective_rows[objective_rows["metric"].eq("usable_yield")].iloc[0]
             lines.append(
-                f"{latex_escape(generator)} & {latex_escape(objective_label)} & "
+                f"{latex_escape(GENERATOR_LABELS[generator])} & {latex_escape(objective_label)} & "
                 f"{effect_text(target)}; {format_p(target.holm_exact_p)} & "
                 f"{effect_text(usable)}; {format_p(usable.holm_exact_p)} \\\\"
             )
@@ -527,7 +514,7 @@ def write_qed_table(statistics: pd.DataFrame, path: Path) -> None:
             high = rows[rows["metric"].eq("qed_ge_0.9_fraction")].iloc[0]
             mean = rows[rows["metric"].eq("qed_mean")].iloc[0]
             lines.append(
-                f"{latex_escape(generator)} & {latex_escape(COMPARATORS[comparator])} & "
+                f"{latex_escape(GENERATOR_LABELS[generator])} & {latex_escape(COMPARATORS[comparator])} & "
                 f"{effect_text(high)}; {format_p(high.holm_exact_p)} & "
                 f"{effect_text(mean, scale=1.0, digits=3)}; "
                 f"{format_p(mean.holm_exact_p)} \\\\"
@@ -573,7 +560,7 @@ def write_report(statistics: pd.DataFrame, path: Path) -> None:
         "- Multiplicity: Holm correction within each generator-by-endpoint family.",
         "- Development seed 11 and exploratory lambda/scope/epoch analyses are excluded.",
         "",
-        "## Liability erasure: NE versus positive fine-tuning",
+        "## Motif suppression: NE versus positive fine-tuning",
         "",
         "Effects below are percentage-point differences (NE minus positive FT).",
         "",
@@ -593,7 +580,7 @@ def write_report(statistics: pd.DataFrame, path: Path) -> None:
             target = rows[rows["metric"].eq("target_hit_fraction")].iloc[0]
             usable = rows[rows["metric"].eq("usable_yield")].iloc[0]
             lines.append(
-                f"| {generator} | {objective} | {effect_text(target)} | "
+                f"| {GENERATOR_LABELS[generator]} | {objective} | {effect_text(target)} | "
                 f"{target.holm_exact_p:.4f} | {effect_text(usable)} | "
                 f"{usable.holm_exact_p:.4f} |"
             )

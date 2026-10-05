@@ -13,6 +13,10 @@ The Zenodo deposit preserves repository-relative paths and includes:
 - compact Transformer scope-development summaries under `results/objectives/`
   and epoch-sensitivity outputs under `results/development/`;
 - the four REINVENT4 liability outputs under `results/external/reinvent4/`;
+- the independent 10,000-attempt REINVENT base evaluations under
+  `results/external/reinvent4/base_evaluation_10000/`;
+- sample-count-controlled molecular-weight calibration and scoring audits
+  under `results/analysis/`;
 - SemlaFlow confirmatory joint-liability selections, sample-level outputs, and
   analyses under `results/external/semlaflow/`; the reconstructible
   50,000-sample base-generation pools are intentionally excluded;
@@ -97,7 +101,7 @@ the reported SemlaFlow model edits.
 
 These revisions and files were verified on 2026-08-27. The project-owned data
 archive is published at
-[`10.5281/zenodo.21991931`](https://doi.org/10.5281/zenodo.21991931). Independent
+[`10.5281/zenodo.23165725`](https://doi.org/10.5281/zenodo.23165725). Independent
 users can retrieve the archived sample-level analyses from this record.
 
 Build the project-owned upload bundle with:
@@ -109,9 +113,13 @@ make zenodo-archive
 
 The builder selects the confirmatory paper results, records the archive version,
 writes per-file SHA-256 checksums, excludes third-party and transient artifacts,
-and verifies the resulting `.tar.zst` archive. The upload-ready files are written
+and verifies every payload SHA-256 checksum in the resulting ZIP64 archive.
+The upload-ready `.zip` and `.zip.sha256` files are written
 under `results/zenodo_release/`. The code repository is versioned separately;
 the publication release tag provides the frozen software snapshot.
+
+The earlier `.tar.zst` format remains supported through the builder's
+`--archive-name` option, but the default upload bundle is now a ZIP file.
 
 ## Not Publicly Distributed
 

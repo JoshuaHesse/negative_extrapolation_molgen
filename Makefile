@@ -6,6 +6,11 @@ PAPER_SEEDS ?= 13 17 19 23 29 31 37 41 43 47
 FCD_JOBS ?= 8
 ANALYSIS_CPUS ?= 64
 ANALYSIS_CPUSET ?= 0-63
+REINVENT_BASE_EVAL_ROOT ?= results/external/reinvent4/base_evaluation_10000
+FCD_SIZE_CHECK_DEVICE ?= cpu
+FCD_SIZE_CHECK_THREADS ?= 8
+FCD_SIZE_CHECK_JOBS ?= 4
+FCD_SIZE_CHECK_ROOT ?= results/analysis/fcd_calibration_size_check
 SEMLAFLOW_CKPT ?= external/semla-flow/assets/models/geom-drugs/200epochs.ckpt
 SEMLAFLOW_DATA ?= external/semla-flow/assets/data/geom-drugs/smol
 SEMLAFLOW_POSEBUSTERS_WORKERS ?= 16
@@ -371,6 +376,48 @@ semlaflow-four-liability-usable-scaffolds:
 
 paper-fcd-mw-calibration: paper-fcd-mw-calibration-reinvent paper-fcd-mw-calibration-guacamol-rnn paper-fcd-mw-calibration-guacamol-transformer
 
+.PHONY: paper-assay-nitro-clean paper-assay-nitro-plan paper-assay-nitro-repair paper-assay-nitro-repair-transformer paper-assay-nitro-repair-reinvent paper-reinvent-assay-scoring-audit paper-fcd-mw-calibration-size-check
+
+# Cleanup is explicit and separate: rerunning the repair must not delete completed work.
+paper-assay-nitro-plan:
+	python3 scripts/repair_assay_nitro.py prepare
+
+paper-assay-nitro-clean:
+	python3 scripts/repair_assay_nitro.py prepare --apply
+
+paper-assay-nitro-repair:
+	$(MAKE) paper-assay-nitro-repair-transformer
+	$(MAKE) paper-assay-nitro-repair-reinvent
+	$(MAKE) paper-reinvent-assay-scoring-audit
+	$(MAKE) publication-si-tables
+
+paper-assay-nitro-repair-transformer:
+	docker compose -f docker-compose.yml -f docker-compose.gpu.yml run --rm neon-molgen \
+		python scripts/repair_assay_nitro.py transformer --device cuda
+
+paper-assay-nitro-repair-reinvent:
+	docker compose -f docker-compose.yml -f docker-compose.gpu.yml run --rm reinvent4 \
+		python scripts/repair_assay_nitro.py reinvent --device cuda:0
+
+paper-reinvent-assay-scoring-audit:
+	ANALYSIS_CPUS=$(ANALYSIS_CPUS) ANALYSIS_CPUSET=$(ANALYSIS_CPUSET) \
+	docker compose -f docker-compose.yml -f docker-compose.analysis.yml run --rm \
+		-e OMP_NUM_THREADS=1 -e OPENBLAS_NUM_THREADS=1 -e MKL_NUM_THREADS=1 neon-molgen \
+		python scripts/audit_reinvent_assay_scoring.py --seeds $(PAPER_SEEDS) --jobs 8
+
+paper-fcd-mw-calibration-size-check:
+	ANALYSIS_CPUS=$(ANALYSIS_CPUS) ANALYSIS_CPUSET=$(ANALYSIS_CPUSET) \
+	docker compose -f docker-compose.yml $(if $(filter cpu,$(FCD_SIZE_CHECK_DEVICE)),,-f docker-compose.gpu.yml) -f docker-compose.analysis.yml run --rm \
+		-e OMP_NUM_THREADS=$(FCD_SIZE_CHECK_THREADS) \
+		-e OPENBLAS_NUM_THREADS=$(FCD_SIZE_CHECK_THREADS) \
+		-e MKL_NUM_THREADS=$(FCD_SIZE_CHECK_THREADS) neon-molgen \
+		python scripts/analyze_fcd_calibration_size_check.py \
+		--output-dir $(FCD_SIZE_CHECK_ROOT) \
+		--seeds $(PAPER_SEEDS) \
+		--device $(FCD_SIZE_CHECK_DEVICE) \
+		--threads $(FCD_SIZE_CHECK_THREADS) \
+		--jobs $(FCD_SIZE_CHECK_JOBS)
+
 paper-fcd-mw-calibration-reinvent:
 	docker compose -f docker-compose.yml -f docker-compose.gpu.yml run --rm neon-molgen \
 		python scripts/analyze_fcd_mw_calibration.py \
@@ -481,6 +528,30 @@ paper-reinvent-chelator-fcd:
 		--jobs $(FCD_JOBS) \
 		--models base positive neon_lambda_1 random_neon_lambda_1 \
 		--flush-every 20
+
+.PHONY: paper-reinvent-base-budget paper-reinvent-base-budget-sample
+paper-reinvent-base-budget-sample:
+	docker compose -f docker-compose.yml -f docker-compose.gpu.yml run --rm reinvent4 \
+		python scripts/evaluate_reinvent_base_budget.py \
+		--prior external/REINVENT4/priors/reinvent.prior \
+		--output-dir $(REINVENT_BASE_EVAL_ROOT) \
+		--seeds $(PAPER_SEEDS) \
+		--eval-samples 10000 \
+		--device cuda:0
+
+paper-reinvent-base-budget: paper-reinvent-base-budget-sample
+	ANALYSIS_CPUS=$(ANALYSIS_CPUS) ANALYSIS_CPUSET=$(ANALYSIS_CPUSET) \
+	docker compose -f docker-compose.yml -f docker-compose.analysis.yml run --rm neon-molgen \
+		python scripts/analyze_diversity.py \
+		--results-dir $(REINVENT_BASE_EVAL_ROOT) \
+		--output-dir $(REINVENT_BASE_EVAL_ROOT)/analysis/diversity \
+		--seeds $(PAPER_SEEDS) \
+		--models base \
+		--internal-sample-size 2000 \
+		--internal-random-pairs 200000 \
+		--sphere-sample-size 5000 \
+		--cluster-fit-size 5000 \
+		--n-clusters 50
 
 paper-statistics:
 	docker compose run --rm neon-molgen \
@@ -982,4 +1053,8 @@ reinvent-specific-liability-replicates:
 
 paper-fcd-distances: paper-guacamol-rnn-chelator-fcd paper-guacamol-transformer-chelator-fcd paper-reinvent-chelator-fcd paper-fcd-mw-calibration
 
-paper-reproduction: paper-control-refresh paper-post-control-analysis paper-statistics publication-si-tables
+paper-reproduction: paper-control-refresh paper-post-control-analysis
+	$(MAKE) paper-reinvent-base-budget
+	$(MAKE) paper-fcd-distances
+	$(MAKE) paper-fcd-mw-calibration-size-check
+	$(MAKE) publication-si-tables

@@ -30,6 +30,7 @@ from neon_molgen.scoring import (
     summarize_scores,
 )
 from neon_molgen.train import train_model_with_history
+from scripts.repair_assay_nitro import refuse_pending_repair
 
 DEFAULT_NEON_SCOPE = {
     "name": "",
@@ -554,6 +555,7 @@ def run_seed(
     delete_refreshed_checkpoints: bool = False,
 ) -> pd.DataFrame:
     seed_output_dir = output_dir / f"seed_{seed}"
+    refuse_pending_repair(seed_output_dir)
     seed_output_dir.mkdir(parents=True, exist_ok=True)
     objective = config["objective"]["name"]
     run_config = copy.deepcopy(config)
@@ -1016,6 +1018,7 @@ def main() -> None:
     summaries = []
     for index, (seed, seed_dir) in enumerate(seed_dirs, start=1):
         seed_output_dir = output_dir / f"seed_{seed}"
+        refuse_pending_repair(seed_output_dir)
         summary_path = seed_output_dir / "summary.csv"
         refresh_marker_path = seed_output_dir / "random_control_refresh_complete.json"
         refresh_is_complete = False

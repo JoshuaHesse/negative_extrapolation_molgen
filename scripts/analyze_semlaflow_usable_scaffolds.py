@@ -14,6 +14,7 @@ from scipy import stats
 
 MODEL_DIRS = {
     "base": "base",
+    "full_model_random_neon_lambda_2p5": "random_ne_2p5",
     "positive_tuned": "positive_tuned",
     "full_model_neon_lambda_2p5": "standard_ne_2p5",
     "full_model_positive_corrected_neon_lambda_2p5": (
@@ -23,12 +24,14 @@ MODEL_DIRS = {
 MODEL_ORDER = list(MODEL_DIRS)
 MODEL_LABELS = {
     "base": "Base",
+    "full_model_random_neon_lambda_2p5": "Random NE",
     "positive_tuned": "Positive FT",
     "full_model_neon_lambda_2p5": "Standard NE",
     "full_model_positive_corrected_neon_lambda_2p5": "CNE",
 }
 MODEL_COLORS = {
     "base": "#7A8089",
+    "full_model_random_neon_lambda_2p5": "#A3A3A3",
     "positive_tuned": "#EE9B00",
     "full_model_neon_lambda_2p5": "#1A759F",
     "full_model_positive_corrected_neon_lambda_2p5": "#52B69A",
@@ -237,15 +240,17 @@ def plot(metrics: pd.DataFrame, output_dir: Path) -> None:
         )
         style_axis(ax)
     axes[0].set_ylabel("Unique usable scaffolds / sampled molecules (%)")
-    axes[0].set_ylim(50.5, 83.5)
-    axes[1].set_ylim(50.5, 83.5)
+    yield_values = 100 * metrics["unique_usable_scaffold_yield"]
+    yield_limits = (float(yield_values.min()) - 2, float(yield_values.max()) + 2)
+    for yield_axis in axes[:2]:
+        yield_axis.set_ylim(*yield_limits)
 
     ax = axes[2]
     subset = metrics[metrics["scope"].eq("3d_usable")]
     values = [
         subset.loc[
             subset["model"].eq(model), "samples_to_fixed_scaffold_target"
-        ].to_numpy()
+        ].dropna().to_numpy()
         for model in MODEL_ORDER
     ]
     artists = ax.boxplot(
@@ -260,6 +265,20 @@ def plot(metrics: pd.DataFrame, output_dir: Path) -> None:
     )
     for patch, model in zip(artists["boxes"], MODEL_ORDER, strict=True):
         patch.set_facecolor(MODEL_COLORS[model])
+    # An unfinished target is a lower bound at the sampling budget, not a count.
+    for position, model in enumerate(MODEL_ORDER, start=1):
+        censored = subset[
+            subset["model"].eq(model)
+            & subset["samples_to_fixed_scaffold_target"].isna()
+        ]
+        if not censored.empty:
+            budget = float(censored["n_sampled"].min())
+            ax.scatter(position, budget, marker="^", facecolors="none",
+                       edgecolors=MODEL_COLORS[model], s=45, zorder=4)
+            ax.annotate(f">{budget:,.0f}", (position, budget),
+                        xytext=(0, 8), textcoords="offset points", ha="center")
+            lower, upper = ax.get_ylim()
+            ax.set_ylim(lower, max(upper, budget * 1.08))
     ax.set_xticks(
         range(1, len(MODEL_ORDER) + 1),
         [MODEL_LABELS[model] for model in MODEL_ORDER],

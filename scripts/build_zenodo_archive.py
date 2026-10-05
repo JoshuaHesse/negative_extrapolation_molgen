@@ -7,6 +7,7 @@ import os
 import re
 import shutil
 import subprocess
+import zipfile
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -19,6 +20,9 @@ SUPPLEMENTARY_RESULT_ROOTS = (
     "results/development/guacamol_transformer_reactive_epoch_sensitivity_seed_11",
     "results/development/reinvent_reactive_epoch_sensitivity_seed_11",
     "results/development/semlaflow_parameter_selection",
+    "results/external/reinvent4/base_evaluation_10000",
+    "results/analysis/fcd_calibration_size_check",
+    "results/analysis/reinvent_base_budget_check",
     "results/paper_statistics",
     "results/publication",
     "results/cleanup_manifests",
@@ -68,10 +72,10 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--archive-name",
-        default="negative_extrapolation_molgen_data_v1.tar.zst",
+        default="negative_extrapolation_molgen_data_v1.zip",
         help="Compressed archive filename.",
     )
-    parser.add_argument("--compression-level", type=int, default=9)
+    parser.add_argument("--compression-level", type=int, default=6)
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--keep-staging", action="store_true")
     return parser.parse_args()
@@ -252,7 +256,30 @@ def stage_files(staging_root: Path, selected: list[Path]) -> None:
             print(f"staged {index}/{len(selected)} files", flush=True)
 
 
+def archive_root_name(archive_name: str) -> str:
+    if Path(archive_name).name != archive_name:
+        raise ValueError("Archive name must be a filename, not a path")
+    for suffix in (".tar.zst", ".zip"):
+        if archive_name.endswith(suffix) and archive_name != suffix:
+            return archive_name.removesuffix(suffix)
+    raise ValueError("Archive name must end in .zip or .tar.zst")
+
+
 def create_archive(staging_parent: Path, root_name: str, archive_path: Path, level: int) -> None:
+    if archive_path.suffix == ".zip":
+        if not 1 <= level <= 9:
+            raise ValueError("ZIP compression level must be between 1 and 9")
+        files = sorted(path for path in (staging_parent / root_name).rglob("*") if path.is_file())
+        with zipfile.ZipFile(
+            archive_path, "w", compression=zipfile.ZIP_DEFLATED,
+            compresslevel=level, allowZip64=True,
+        ) as archive:
+            for index, path in enumerate(files, start=1):
+                archive.write(path, path.relative_to(staging_parent).as_posix())
+                if index % 250 == 0:
+                    print(f"compressed {index}/{len(files)} files", flush=True)
+        return
+
     tar_command = [
         "tar",
         "--sort=name",
@@ -280,15 +307,47 @@ def create_archive(staging_parent: Path, root_name: str, archive_path: Path, lev
 
 
 def verify_archive(archive_path: Path, root_name: str, expected_file_count: int) -> None:
+    if archive_path.suffix == ".zip":
+        with zipfile.ZipFile(archive_path) as archive:
+            archived_files = [item.filename for item in archive.infolist() if not item.is_dir()]
+            verify_members(archived_files, root_name, expected_file_count)
+            lines = archive.read(f"{root_name}/SHA256SUMS").decode().splitlines()
+            payload = [line.split("  ", 1) for line in lines]
+            expected_payload = {f"{root_name}/{relative}" for _, relative in payload}
+            metadata_names = {f"{root_name}/{name}" for name in (
+                "README.md", "MANIFEST.tsv", "SHA256SUMS", "archive_metadata.json",
+                "reproducibility_manifest.json",
+            )}
+            if len(payload) != expected_file_count or expected_payload | metadata_names != set(archived_files):
+                raise RuntimeError("Archive verification failed: payload differs from checksum manifest")
+            for name in metadata_names:
+                archive.read(name)
+            for index, (expected_hash, relative) in enumerate(payload, start=1):
+                digest = hashlib.sha256()
+                with archive.open(f"{root_name}/{relative}") as handle:
+                    for chunk in iter(lambda: handle.read(4 * 1024 * 1024), b""):
+                        digest.update(chunk)
+                if digest.hexdigest() != expected_hash:
+                    raise RuntimeError(f"Archive checksum mismatch: {relative}")
+                if index % 250 == 0:
+                    print(f"verified {index}/{len(payload)} payload files", flush=True)
+        return
+
     listing = subprocess.check_output(
         ["tar", "--zstd", "-tf", str(archive_path)], text=True
     ).splitlines()
     archived_files = [name for name in listing if name and not name.endswith("/")]
+    verify_members(archived_files, root_name, expected_file_count)
+
+
+def verify_members(archived_files: list[str], root_name: str, expected_file_count: int) -> None:
     expected = expected_file_count + 5
     if len(archived_files) != expected:
         raise RuntimeError(
             f"Archive verification failed: found {len(archived_files)} files, expected {expected}"
         )
+    if len(set(archived_files)) != len(archived_files):
+        raise RuntimeError("Archive verification failed: duplicate filenames")
     required = {
         f"{root_name}/README.md",
         f"{root_name}/MANIFEST.tsv",
@@ -303,6 +362,9 @@ def verify_archive(archive_path: Path, root_name: str, expected_file_count: int)
 
 def main() -> None:
     args = parse_args()
+    root_name = archive_root_name(args.archive_name)
+    if args.archive_name.endswith(".zip") and not 1 <= args.compression_level <= 9:
+        raise ValueError("ZIP compression level must be between 1 and 9")
     manifest = json.loads(REPRODUCIBILITY_MANIFEST.read_text())
     selected = collect_files(manifest)
     total_size = sum((ROOT / relative).stat().st_size for relative in selected)
@@ -312,7 +374,6 @@ def main() -> None:
 
     output_dir = args.output_dir.resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
-    root_name = args.archive_name.removesuffix(".tar.zst")
     staging_parent = output_dir / ".staging"
     staging_root = staging_parent / root_name
     if staging_parent.exists():
@@ -330,12 +391,14 @@ def main() -> None:
     stage_files(staging_root, selected)
 
     archive_path = output_dir / args.archive_name
+    building_path = output_dir / f".building-{args.archive_name}"
     print(f"Compressing {archive_path}...", flush=True)
-    create_archive(staging_parent, root_name, archive_path, args.compression_level)
-    print("Verifying archive structure...", flush=True)
-    verify_archive(archive_path, root_name, len(selected))
+    create_archive(staging_parent, root_name, building_path, args.compression_level)
+    print("Verifying archive structure and ZIP payload checksums...", flush=True)
+    verify_archive(building_path, root_name, len(selected))
 
-    archive_checksum = sha256(archive_path)
+    archive_checksum = sha256(building_path)
+    building_path.replace(archive_path)
     checksum_path = archive_path.with_suffix(archive_path.suffix + ".sha256")
     checksum_path.write_text(f"{archive_checksum}  {archive_path.name}\n")
     if not args.keep_staging:

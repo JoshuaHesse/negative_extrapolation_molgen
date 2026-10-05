@@ -9,7 +9,10 @@ because the archive also contains release metadata named `README.md`.
 
 ```bash
 mkdir -p /tmp/ne-data
-tar --zstd -xf negative_extrapolation_molgen_data_v1.tar.zst -C /tmp/ne-data
+python3 -m zipfile -e negative_extrapolation_molgen_data_v1.zip /tmp/ne-data
+cd /tmp/ne-data/negative_extrapolation_molgen_data_v1
+sha256sum -c SHA256SUMS
+cd -
 cp -a /tmp/ne-data/negative_extrapolation_molgen_data_v1/results/. results/
 ```
 
@@ -64,7 +67,9 @@ the reported analyses and figures.
 
 ```bash
 make paper-post-control-analysis
+make paper-reinvent-base-budget
 make paper-fcd-distances
+make paper-fcd-mw-calibration-size-check
 make paper-statistics
 make publication-si-tables
 make audit-results

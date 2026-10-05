@@ -1,5 +1,5 @@
 {
-  "project_data_doi": "10.5281/zenodo.21991931",
+  "project_data_doi": "10.5281/zenodo.23165725",
   "confirmatory_seeds": [13, 17, 19, 23, 29, 31, 37, 41, 43, 47],
   "repositories": [
     {
@@ -65,11 +65,16 @@
     {"name": "REINVENT4 metal-binding", "root": "results/external/reinvent4/chelator_replicates", "pattern": "seed_{seed}/scores/summary.csv"},
     {"name": "REINVENT4 charged motif", "root": "results/external/reinvent4/charged_motif_replicates", "pattern": "seed_{seed}/scores/summary.csv"},
     {"name": "REINVENT4 assay interference", "root": "results/external/reinvent4/assay_interference_replicates", "pattern": "seed_{seed}/scores/summary.csv"},
+    {"name": "REINVENT prior independent 10k base evaluation", "root": "results/external/reinvent4/base_evaluation_10000", "pattern": "seed_{seed}/base_samples.csv"},
     {"name": "SemlaFlow joint liability", "root": "results/external/semlaflow/four_liability_joint_replicates", "pattern": "seed_{seed}/joint/summary.csv"},
     {"name": "SemlaFlow random correction reference", "root": "results/external/semlaflow/four_liability_joint_replicates", "pattern": "seed_{seed}/random_reference/summary.csv"},
     {"name": "SemlaFlow positive correction reference", "root": "results/external/semlaflow/four_liability_joint_replicates", "pattern": "seed_{seed}/positive_tuning/summary.csv"}
   ],
   "analysis_files": [
+    "results/external/reinvent4/base_evaluation_10000/objective_metrics.csv",
+    "results/analysis/fcd_calibration_size_check/comparison_metrics.csv",
+    "results/analysis/reinvent_base_budget_check/assay_scoring_audit.csv",
+    "results/analysis/reinvent_base_budget_check/assay_selection_audit.csv",
     "results/objectives/guacamol_transformer_chelator_scope_development/objective_metrics.csv",
     "results/paper_statistics/confirmatory_endpoint_values.csv",
     "results/paper_statistics/confirmatory_paired_comparisons.csv",

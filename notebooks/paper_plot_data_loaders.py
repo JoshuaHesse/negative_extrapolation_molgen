@@ -6,6 +6,16 @@ import numpy as np
 import pandas as pd
 from scipy import stats
 
+from neon_molgen.paper_data import (
+    load_mw_calibration_comparisons,
+    load_reference,
+    novelty_aware_usable_yield,
+    replace_reinvent_base,
+)
+from neon_molgen.paper_data import (
+    replace_reinvent_base_diversity as replace_reinvent_base_diversity,
+)
+
 ROOT = Path.cwd()
 if not (ROOT / "results").exists() and (ROOT.parent / "results").exists():
     ROOT = ROOT.parent
@@ -114,14 +124,31 @@ def _summarize_filtered_metrics(
     return summary
 
 
-def load_guacamol_liability(*, seeds: list[int] | None = None) -> pd.DataFrame:
+def load_guacamol_liability(*, seeds: list[int] | None = None, objectives=None) -> pd.DataFrame:
     """Per-seed custom RNN/Transformer liability results from objective_metrics.csv."""
     rows = []
+    references = {}
+    seeds = PAPER_SEEDS_10 if seeds is None else seeds
     for objective, meta in OBJECTIVES.items():
+        if objectives is not None and objective not in objectives:
+            continue
         for arch, dir_key in [("RNN", "rnn_dir"), ("Transformer", "transformer_dir")]:
             path = RESULTS / "objectives" / meta[dir_key] / "objective_metrics.csv"
-            df = _read_csv(path)
-            df = df.copy()
+            df = _filter_paper_seeds(_read_csv(path), seeds)
+            if "usable_yield" not in df:
+                df["usable_yield"] = np.nan
+            missing = df["usable_yield"].isna()
+            if missing.any():
+                if arch not in references:
+                    base = "guacamol_rnn_base" if arch == "RNN" else "guacamol_transformer_base"
+                    references[arch] = load_reference(RESULTS / base / "reference_canonical_smiles.smi")
+                for index, row in df[missing].iterrows():
+                    sample_path = path.parent / f"seed_{int(row['seed'])}" / f"{row['model']}_samples.csv"
+                    df.at[index, "usable_yield"] = novelty_aware_usable_yield(
+                        sample_path,
+                        liability_column=meta["metric"].removesuffix("_fraction"),
+                        reference=references[arch],
+                    )
             df["objective"] = objective
             df["objective_label"] = meta["label"]
             df["architecture"] = arch
@@ -129,18 +156,20 @@ def load_guacamol_liability(*, seeds: list[int] | None = None) -> pd.DataFrame:
             df["target_hit_fraction"] = df[meta["metric"]]
             rows.append(df)
     data = pd.concat(rows, ignore_index=True)
-    seeds = PAPER_SEEDS_10 if seeds is None else seeds
     data = data[data["seed"].isin(seeds)].copy()
     return _add_common_labels(data)
 
 
-def load_reinvent_liability(*, seeds: list[int] | None = None) -> pd.DataFrame:
-    """Per-seed REINVENT prior liability results from objective_metrics.csv."""
+def load_reinvent_liability(*, seeds: list[int] | None = None, objectives=None) -> pd.DataFrame:
+    """Edited results with the independently sampled 10k-attempt base evaluation."""
     rows = []
+    seeds = PAPER_SEEDS_10 if seeds is None else seeds
     for objective, meta in OBJECTIVES.items():
+        if objectives is not None and objective not in objectives:
+            continue
         path = RESULTS / "external/reinvent4" / meta["reinvent_dir"] / "objective_metrics.csv"
         df = _read_csv(path)
-        df = df.copy()
+        df = replace_reinvent_base(df, ROOT, objective=objective, seeds=seeds)
         df["objective"] = objective
         df["objective_label"] = meta["label"]
         df["target_metric"] = meta["metric"]
@@ -158,21 +187,24 @@ def load_reinvent_liability(*, seeds: list[int] | None = None) -> pd.DataFrame:
 
 def load_fcd_mw_calibration(
     *,
-    folder: Path | None = None,
+    generator: str = "reinvent",
+    mode: str = "common_size",
     seeds: list[int] | None = None,
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Load molecular-weight band calibration for FCD/FDD interpretation.
 
-    Generate with `make paper-fcd-mw-calibration`. The control compares
-    interpretable MW-filtered baseline subsets against an unfiltered baseline
-    reference from the same generator.
+    Generate with `make paper-fcd-mw-calibration-size-check`. The default uses
+    the same query/reference count for every MW band within a generator/seed.
+    Draws share a saved pool and may overlap; these are not universal thresholds.
     """
-    folder = folder or (RESULTS / "external/reinvent4/chelator_replicates/analysis/fcd_mw_calibration")
-    metrics = _read_csv(folder / "mw_fcd_calibration_metrics.csv")
-    metrics = _filter_paper_seeds(metrics, seeds)
+    seeds = PAPER_SEEDS_10 if seeds is None else seeds
+    comparisons = load_mw_calibration_comparisons(ROOT, seeds=seeds)
+    if generator not in {"rnn", "transformer", "reinvent"} or mode not in {"original", "pair_matched", "common_size"}:
+        raise ValueError("Unknown calibration generator or mode")
+    metrics = comparisons[comparisons.generator.eq(generator) & comparisons["mode"].eq(mode)].copy()
     summary = _summarize_filtered_metrics(
         metrics,
-        ["band", "band_label", "q_low", "q_high"],
+        ["band", "band_label"],
     )
     return metrics, summary
 
@@ -215,9 +247,8 @@ def summarize_mean_ci(
     return summary
 
 
-# Convenience loads for a first notebook run. Re-run these cells after new replicates finish.
-guacamol_liability = load_guacamol_liability()
-reinvent_liability = load_reinvent_liability()
-
-print("GuacaMol liability:", guacamol_liability.shape, "seeds", sorted(guacamol_liability["seed"].unique()))
-print("REINVENT liability:", reinvent_liability.shape, "seeds", sorted(reinvent_liability["seed"].unique()))
+if __name__ == "__main__":
+    guacamol_liability = load_guacamol_liability()
+    reinvent_liability = load_reinvent_liability()
+    print("GuacaMol liability:", guacamol_liability.shape)
+    print("REINVENT liability:", reinvent_liability.shape)
